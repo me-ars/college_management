@@ -1,11 +1,11 @@
 
 import 'package:flutter/material.dart';
 
-import 'app_pallete.dart';
+import '../constants/app_pallete.dart';
 
 class AppTheme {
   static ThemeData lightThemeMode = ThemeData.light().copyWith(
-      scaffoldBackgroundColor: AppPalette.violetDark,
+      scaffoldBackgroundColor: AppPalette.whiteColor,
       appBarTheme:
        const AppBarTheme(backgroundColor: AppPalette.transparent),
       textTheme:  const TextTheme(

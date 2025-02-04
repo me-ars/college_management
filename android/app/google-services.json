@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385710333160",
+    "project_id": "mes-aimat-27492",
+    "storage_bucket": "mes-aimat-27492.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385710333160:android:4aca25ed8c4e7559cf3d5d",
+        "android_client_info": {
+          "package_name": "com.example.college_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqNLUFTita28e-pHv5HfjzwJRx_kLXBL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

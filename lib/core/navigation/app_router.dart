@@ -1,7 +1,7 @@
+import 'package:college_management/views/auth/signup_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../views/auth/login_view.dart';
-import '../constants/route_constants.dart' as route_names;
+import '../constants/route_constants.dart';
 
 import '../../app/app_state.dart';
 
@@ -16,11 +16,19 @@ class AppRouter {
     initialLocation: '/',
     routes: <RouteBase>[
       GoRoute(
-        name: route_names.login,
+        name: RouteConstants.login,
         path: '/',
         pageBuilder: (context, state) => const MaterialPage<void>(
-          key: ValueKey<String>(route_names.login),
-          child: LoginView(),
+          key: ValueKey<String>(RouteConstants.login),
+          child: SignupView(),
+        ),
+      ),
+      GoRoute(
+        name: RouteConstants.signUp,
+        path: '/signup',
+        pageBuilder: (context, state) => const MaterialPage<void>(
+          key: ValueKey<String>(RouteConstants.signUp),
+          child: SignupView(),
         ),
       ),
     ],

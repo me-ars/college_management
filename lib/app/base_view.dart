@@ -53,6 +53,6 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<T>(
         create: (BuildContext context) => model,
-        child: PopScope(child: Consumer<T>(builder: widget.builder)));
+        child: Consumer<T>(builder: widget.builder));
   }
 }

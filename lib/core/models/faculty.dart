@@ -12,10 +12,8 @@ class Faculty {
   final String coName;
   final String coPhoneNumber;
   final String address;
-  final String loginPassword;
 
   Faculty({
-    required this.loginPassword,
     required this.firstName,
     required this.lastName,
     required this.employeeId,
@@ -47,7 +45,23 @@ class Faculty {
       'coName': coName,
       'coPhoneNumber': coPhoneNumber,
       'address': address,
-      'loginPassword': loginPassword
     };
+  }
+  factory Faculty.fromMap(Map<String, dynamic> map) {
+    return Faculty(
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      employeeId: map['employeeId'],
+      course: map['course'],
+      joiningDate: map['joiningDate'],
+      subject: map['subject'],
+      gender: map['gender'],
+      dob: map['dob'],
+      phone: map['phone'],
+      email: map['email'],
+      coName: map['coName'],
+      coPhoneNumber: map['coPhoneNumber'],
+      address: map['address'],
+    );
   }
 }

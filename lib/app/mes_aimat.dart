@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../core/models/faculty.dart';
+import '../core/models/student.dart';
 import '../core/navigation/app_router.dart';
 import '../core/theme/theme.dart';
 import 'app_state.dart';
 
 class MesAimat extends StatefulWidget {
-  const MesAimat({super.key});
+ final Student? student;
+ final Faculty? faculty;
+
+  const MesAimat({super.key, this.student, this.faculty});
 
   @override
   State<MesAimat> createState() => _MesAimatState();

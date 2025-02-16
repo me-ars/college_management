@@ -11,6 +11,7 @@ class BaseViewModel extends ChangeNotifier {
 
 
   void dispose() {
+    super.dispose();
     _disposed = true;
   }
 
@@ -23,7 +24,6 @@ class BaseViewModel extends ChangeNotifier {
 
   setViewState({required ViewState state, String? loadingMessage}) {
     _viewState = state;
-
     notifyListeners();
   }
 }

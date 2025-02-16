@@ -11,14 +11,13 @@ class AuthServiceImpl extends AuthService {
   AuthServiceImpl({required FirebaseService firebaseService})
       : _firebaseService = firebaseService;
   @override
-  Future<void> registerUser({Student? student, Faculty? faculty}) async {
+  Future<void> registerUser(
+      {Student? student, Faculty? faculty, required String password}) async {
     try {
       final bool isStudent = student != null;
       final String email = isStudent ? student.email : faculty!.email;
-      final String password = isStudent ? student.loginPassword : faculty!.loginPassword;
-
+      final documentId = isStudent ? student.studentId : faculty!.employeeId;
       print("Attempting to register user: $email");
-
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -31,7 +30,7 @@ class AuthServiceImpl extends AuthService {
 
       await _firebaseService.setData(
         collectionName: "users",
-        documentId: uid,
+        documentId: documentId,
         data: userData,
       );
 
@@ -46,4 +45,23 @@ class AuthServiceImpl extends AuthService {
     }
   }
 
+  @override
+  Future loginUser({required String userId, required String password}) async {
+    try {
+      var users = await _firebaseService.getData(collectionName: "users");
+
+      Map<String, dynamic>? filteredUser = users
+          .cast<Map<String, dynamic>>()
+          .firstWhere(
+            (user) =>
+                (user["employeeId"] == userId || user["studentId"] == userId),
+            orElse: () => {},
+          );
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: filteredUser?["email"], password: password);
+      return filteredUser;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

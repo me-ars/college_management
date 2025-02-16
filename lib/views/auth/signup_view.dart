@@ -1,9 +1,11 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/app/base_view.dart';
 import 'package:college_management/utils/string_utils.dart';
 import 'package:college_management/view_models/auth/signup_view_model.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/constants/app_pallete.dart';
 import '../../core/models/faculty.dart';
 import '../../core/models/student.dart';
@@ -133,6 +135,9 @@ class _SignupViewState extends State<SignupView> {
                               });
                             })
                         : otherDetailForm2(
+                            passwordController: _passwordController,
+                            confirmPasswordController:
+                                _confirmPasswordController,
                             isStudent: isStudentRegistration,
                             size: size,
                             addressController: _addressController,
@@ -140,60 +145,67 @@ class _SignupViewState extends State<SignupView> {
                             plusTwoController: _plusTwoController,
                             sslcController: _sslcController,
                             onSignup: () {
+                              if (_passwordController.text ==
+                                  _confirmPasswordController.text)
                               // Create a Faculty or Student object based on the role
-                              if (isStudentRegistration) {
-                                // Create a Student object
-                                Student student = Student(
-                                  loginPassword: password,
-                                  firstName: _firstNameController.text,
-                                  lastName: _lastNameController.text,
-                                  studentId: _idController.text,
-                                  course: _selectedCourse,
-                                  email: _emailController.text,
-                                  phone: _phoneController.text,
-                                  joiningDate: _joiningDateController.text,
-                                  batch: _batchNameController.text,
-                                  dob: _dobController.text,
-                                  gender: _genderController.text,
-                                  guardianName: _coNameController.text,
-                                  guardianPhone: _coPhoneController.text,
-                                  address: _addressController.text,
-                                  sslc: _sslcController.text,
-                                  plusTwo: _plusTwoController.text,
-                                  bachelors: _bachelorsController.text,
-                                );
+                              {
+                                password = _confirmPasswordController.text;
+                                if (isStudentRegistration) {
+                                  // Create a Student object
+                                  Student student = Student(
+                                    firstName: _firstNameController.text,
+                                    lastName: _lastNameController.text,
+                                    studentId: _idController.text,
+                                    course: _selectedCourse,
+                                    email: _emailController.text,
+                                    phone: _phoneController.text,
+                                    joiningDate: _joiningDateController.text,
+                                    batch: _batchNameController.text,
+                                    dob: _dobController.text,
+                                    gender: _genderController.text,
+                                    guardianName: _coNameController.text,
+                                    guardianPhone: _coPhoneController.text,
+                                    address: _addressController.text,
+                                    sslc: _sslcController.text,
+                                    plusTwo: _plusTwoController.text,
+                                    bachelors: _bachelorsController.text,
+                                  );
 
-                                // Call signupUser for a student
-                                model.signupUser(
-                                  isStudent: true,
-                                  student: student,
-                                  faculty: null, // Pass null for faculty
-                                );
-                              } else {
-                                // Create a Faculty object
-                                Faculty faculty = Faculty(
-                                  loginPassword: password,
-                                  firstName: _firstNameController.text,
-                                  lastName: _lastNameController.text,
-                                  employeeId: _idController.text,
-                                  email: _emailController.text,
-                                  phone: _phoneController.text,
-                                  joiningDate: _joiningDateController.text,
-                                  subject: _batchNameController.text,
-                                  dob: _dobController.text,
-                                  gender: _genderController.text,
-                                  coName: _coNameController.text,
-                                  coPhoneNumber: _coPhoneController.text,
-                                  address: _addressController.text,
-                                  course: _selectedCourse,
-                                );
+                                  // Call signupUser for a student
+                                  model.signupUser(
+                                    password: password,
+                                    appState: context.read<AppState>(),
+                                    isStudent: true,
+                                    student: student,
+                                    faculty: null, // Pass null for faculty
+                                  );
+                                } else {
+                                  // Create a Faculty object
+                                  Faculty faculty = Faculty(
+                                    firstName: _firstNameController.text,
+                                    lastName: _lastNameController.text,
+                                    employeeId: _idController.text,
+                                    email: _emailController.text,
+                                    phone: _phoneController.text,
+                                    joiningDate: _joiningDateController.text,
+                                    subject: _batchNameController.text,
+                                    dob: _dobController.text,
+                                    gender: _genderController.text,
+                                    coName: _coNameController.text,
+                                    coPhoneNumber: _coPhoneController.text,
+                                    address: _addressController.text,
+                                    course: _selectedCourse,
+                                  );
 
-                                // Call signupUser for a faculty
-                                model.signupUser(
-                                  isStudent: false,
-                                  faculty: faculty,
-                                  student: null, // Pass null for student
-                                );
+                                  // Call signupUser for a faculty
+                                  model.signupUser(
+                                    password: password,
+                                    appState: context.read<AppState>(),
+                                    isStudent: false,
+                                    faculty: faculty,
+                                    student: null, // Pass null for student
+                                  );
+                                }
                               }
                             },
                             onPrev: () {
@@ -376,6 +388,8 @@ class _SignupViewState extends State<SignupView> {
 
   Widget otherDetailForm2(
       {required Size size,
+      required TextEditingController passwordController,
+      required TextEditingController confirmPasswordController,
       required TextEditingController addressController,
       required TextEditingController sslcController,
       required TextEditingController plusTwoController,

@@ -6,8 +6,12 @@ Future<void> initDependencies() async {
 //singleton
   locator.registerLazySingleton<AuthService>(() => AuthServiceImpl(firebaseService: locator()));
   locator.registerLazySingleton<FirebaseService>(()=>FirebaseServiceImpl());
+  locator.registerLazySingleton<DatabaseService>(() => DatabaseServiceImpl());
+
 //non singleton
-  locator.registerFactory<LoginViewModel>(() => LoginViewModel());
-  locator.registerFactory<SignupViewModel>(
-      () => SignupViewModel(firebaseService: locator()));
+  locator.registerFactory<LoginViewModel>(
+      () => LoginViewModel(authService: locator(),databaseService: locator()));
+  locator.registerFactory<SignupViewModel>(() =>
+      SignupViewModel(firebaseService: locator(), databaseService: locator()));
+  locator.registerFactory<HomeViewModel>(() => HomeViewModel());
 }

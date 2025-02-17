@@ -15,10 +15,8 @@ class Student {
   final String sslc;
   final String plusTwo;
   final String bachelors;
-  final String loginPassword;
 
   Student({
-    required this.loginPassword,
     required this.firstName,
     required this.lastName,
     required this.studentId,
@@ -56,7 +54,26 @@ class Student {
       'sslc': sslc,
       'plusTwo': plusTwo,
       'bachelors': bachelors,
-      'loginPassword': loginPassword
     };
+  }
+  factory Student.fromMap(Map<String, dynamic> map) {
+    return Student(
+      firstName: map['firstName'],
+      lastName: map['lastName'],
+      studentId: map['studentId'],
+      course: map['course'],
+      joiningDate: map['joiningDate'],
+      batch: map['batch'],
+      gender: map['gender'],
+      dob: map['dob'],
+      phone: map['phone'],
+      email: map['email'],
+      guardianName: map['guardianName'],
+      guardianPhone: map['guardianPhone'],
+      address: map['address'],
+      sslc: map['sslc'],
+      plusTwo: map['plusTwo'],
+      bachelors: map['bachelors'],
+    );
   }
 }

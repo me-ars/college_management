@@ -20,33 +20,28 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-            boxShadow: const [
-              BoxShadow(
-                  color: AppPalette.violetLt,
-                  offset: Offset(0, 2),
-                  blurRadius: 10,
-                  spreadRadius: 0.2)
-            ],
-            borderRadius: BorderRadius.circular(height * 0.4),
-            color: AppPalette.violetLt),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+      child: GestureDetector(
+        onTap: () {
+      onPressed();
+      },
+        child: Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+              boxShadow: const [
+                BoxShadow(
+                    color: AppPalette.violetLt,
+                    offset: Offset(0, 2),
+                    blurRadius: 10,
+                    spreadRadius: 0.2)
+              ],
+              borderRadius: BorderRadius.circular(height * 0.4),
+              color: AppPalette.violetLt),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
-          ),
-          onPressed: () {
-            onPressed();
-          },
-          child: Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ),
       ),

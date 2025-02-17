@@ -2,6 +2,7 @@ import 'package:college_management/app/app_state.dart';
 import 'package:college_management/app/base_view.dart';
 import 'package:college_management/utils/string_utils.dart';
 import 'package:college_management/view_models/auth/signup_view_model.dart';
+import 'package:college_management/views/helper_classes/custom_snackbar.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
@@ -101,6 +102,8 @@ class _SignupViewState extends State<SignupView> {
                             setState(() {
                               formNumber++;
                             });
+                          }{
+                            CustomSnackbar.show(context, "Fields can't be empty");
                           }
                         })
                     : formNumber == 2
@@ -127,6 +130,9 @@ class _SignupViewState extends State<SignupView> {
                                 setState(() {
                                   formNumber++;
                                 });
+                              }
+                              else{
+                                CustomSnackbar.show(context, "Fields can't be empty");
                               }
                             },
                             onPrev: () {
@@ -488,7 +494,7 @@ class _SignupViewState extends State<SignupView> {
                   if (!isMatchingPassword) {
                     print("Passwords do not match");
                   } else if (!areAllFieldsFilled) {
-                    print("Fields cannot be empty");
+                    CustomSnackbar.show(context,"Fields cannot be empty");
                   } else {
                     // If passwords match and all fields are filled, proceed with signup
                     onSignup();

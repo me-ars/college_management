@@ -17,7 +17,7 @@ class AppRouter {
       if (_appState.faculty != null || _appState.student != null) {
         return '/home';
       }
-      return '/home';
+      return '/';
     },
     routes: <RouteBase>[
       GoRoute(

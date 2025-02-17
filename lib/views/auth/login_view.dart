@@ -72,23 +72,30 @@ class _LoginViewState extends State<LoginView> {
                       CustomButton(
                           label: "Login",
                           onPressed: () async {
+
                             if (_usernameController.text.isNotEmpty &&
                                 _passwordController.text.isNotEmpty) {
+                              if (_passwordController.text.length < 6) {
+                                CustomSnackbar.show(context, "Password should contain at least 6 characters");
+                                return; // Stop further execution
+                              }
+
                               model.login(
-                                  appState: context.read<AppState>(),
-                                  userId: _usernameController.text,
-                                  password: _passwordController.text);
+                                appState: context.read<AppState>(),
+                                userId: _usernameController.text,
+                                password: _passwordController.text,
+                              );
                             } else {
-                              CustomSnackbar.show(
-                                  context, "Fields cant be empty");
+                              CustomSnackbar.show(context, "Fields can't be empty");
                             }
                           },
+
                           width: size.width * 0.75,
                           height: size.height * 0.06),
                       SizedBox(height: size.height * 0.01),
                       GestureDetector(onTap: (){
-                        context.goNamed(RouteConstants.signUp);
-                      },
+                          GoRouter.of(context).goNamed(RouteConstants.signUp);
+                        },
                         child: const Text(
                           "Don't have an account? Signup",
                           style: TextStyle(color: AppPalette.secondaryTextColor),

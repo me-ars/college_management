@@ -13,9 +13,6 @@ void main() async {
           appId: "1:385710333160:android:4aca25ed8c4e7559cf3d5d",
           messagingSenderId: "385710333160",
           projectId: "mes-aimat-27492"));
-  var faculty = await locator<DatabaseService>().getFaculties();
-  var student = await locator<DatabaseService>().getStudents();
-  print(faculty);
-  print(student);
+
   runApp(MesAimat());
 }

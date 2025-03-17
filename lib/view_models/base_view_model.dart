@@ -1,3 +1,4 @@
+import 'package:college_management/core/error/base_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import '../core/enums/view_state.dart';
@@ -8,8 +9,12 @@ class BaseViewModel extends ChangeNotifier {
   ViewState _viewState = ViewState.ideal;
 
   ViewState get viewState => _viewState;
+  BaseException? _exception;
 
+  BaseException? get exception => _exception;
+  Function? _retryMethod;
 
+  Function? get retryMethod => _retryMethod;
   void dispose() {
     super.dispose();
     _disposed = true;
@@ -20,6 +25,16 @@ class BaseViewModel extends ChangeNotifier {
     if (!_disposed) {
       super.notifyListeners();
     }
+  }
+
+  showException({required dynamic error, required Function retryMethod}) {
+    if (error! is BaseException) {
+      _exception = AppException(error: error);
+    } else {
+      _exception = error;
+    }
+    _retryMethod = retryMethod;
+    notifyListeners();
   }
 
   setViewState({required ViewState state, String? loadingMessage}) {

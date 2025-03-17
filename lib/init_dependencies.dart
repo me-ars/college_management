@@ -1,9 +1,17 @@
 import 'package:college_management/core/services/database_service/database_service.dart';
+import 'package:college_management/core/services/fee_services/fee_service.dart';
+import 'package:college_management/core/services/fee_services/fee_service_impl.dart';
 import 'package:college_management/core/services/firebase_service/firebase_service.dart';
 import 'package:college_management/core/services/firebase_service/firebase_service_impl.dart';
+import 'package:college_management/view_models/admin/announcement_view_model.dart';
+import 'package:college_management/view_models/admin/contact_view_model.dart';
+import 'package:college_management/view_models/admin/faculty_view_model.dart';
+import 'package:college_management/view_models/admin/fee_view_model.dart';
 import 'package:college_management/view_models/auth/login_view_model.dart';
 import 'package:college_management/view_models/auth/signup_view_model.dart';
+import 'package:college_management/view_models/calender_view_model.dart';
 import 'package:college_management/view_models/home_view_model.dart';
+import 'package:college_management/views/shared_view_models/students_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'core/services/auth_services/auth_service.dart';
 import 'core/services/auth_services/auth_service_impl.dart';

@@ -1,6 +1,5 @@
 import 'package:college_management/app/app_state.dart';
 import 'package:college_management/app/base_view.dart';
-import 'package:college_management/utils/string_utils.dart';
 import 'package:college_management/view_models/auth/signup_view_model.dart';
 import 'package:college_management/views/helper_classes/custom_snackbar.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
@@ -10,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/app_pallete.dart';
 import '../../core/models/faculty.dart';
 import '../../core/models/student.dart';
+import '../../utils/validators.dart';
 import '../widgets/custom_date_picker.dart';
 import '../widgets/custom_text_field.dart';
 
@@ -45,15 +45,32 @@ class _SignupViewState extends State<SignupView> {
   int formNumber = 1;
   bool isStudentRegistration = true;
 
-  bool _isAllFieldsEmpty({required List<String?> fieldValues}) {
-    return fieldValues.every((value) => StringUtils.isEmptyString(value));
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BaseView<SignupViewModel>(
       refresh: (SignupViewModel model) {},
+      onDispose: (SignupViewModel model){
+         _firstNameController.dispose();
+         _lastNameController.dispose();
+         _idController.dispose();
+         _emailController.dispose();
+         _phoneController.dispose();
+         _joiningDateController.dispose();
+         _batchNameController.dispose();
+         _dobController.dispose();
+         _genderController.dispose();
+         _coNameController.dispose();
+        _confirmPasswordController.dispose();
+        _passwordController.dispose();_bachelorsController.dispose();
+        _plusTwoController.dispose();
+        _sslcController.dispose();
+        _addressController.dispose();
+        _coPhoneController.dispose();
+        _coPhoneController.dispose();
+        _coNameController.dispose();
+      },
       builder: (context, model, child) {
         return SafeArea(
             child: Scaffold(
@@ -90,7 +107,7 @@ class _SignupViewState extends State<SignupView> {
                           _selectedCourse = val;
                         },
                         onNext: () {
-                          if (!_isAllFieldsEmpty(fieldValues: [
+                          if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
                             _role,
                             _selectedCourse,
                             _firstNameController.text,
@@ -99,11 +116,24 @@ class _SignupViewState extends State<SignupView> {
                             _emailController.text,
                             _phoneController.text
                           ])) {
+                            if (!ValidationUtils.isValidName(
+                                    _firstNameController.text) ||
+                                !ValidationUtils.isValidName(
+                                    _lastNameController.text)) {
+                              CustomSnackBar.show(context, "Invalid Name");
+                              return;
+                            }
+                            if (!ValidationUtils.isValidEmail(
+                                _emailController.text)) {
+                              CustomSnackBar.show(context, "Invalid email");
+                              return;
+                            }
+
                             setState(() {
                               formNumber++;
                             });
                           }{
-                            CustomSnackbar.show(context, "Fields can't be empty");
+                            CustomSnackBar.show(context, "Fields can't be empty");
                           }
                         })
                     : formNumber == 2
@@ -117,7 +147,7 @@ class _SignupViewState extends State<SignupView> {
                             admnDateController: _joiningDateController,
                             batchController: _batchNameController,
                             onNext: () {
-                              if (!_isAllFieldsEmpty(fieldValues: [
+                              if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
                                 _coNameController.text,
                                 _coPhoneController.text,
                                 _dobController.text,
@@ -132,7 +162,7 @@ class _SignupViewState extends State<SignupView> {
                                 });
                               }
                               else{
-                                CustomSnackbar.show(context, "Fields can't be empty");
+                                CustomSnackBar.show(context, "Fields can't be empty");
                               }
                             },
                             onPrev: () {
@@ -155,7 +185,12 @@ class _SignupViewState extends State<SignupView> {
                                   _confirmPasswordController.text)
                               // Create a Faculty or Student object based on the role
                               {
+
                                 password = _confirmPasswordController.text;
+                                if(password.length<6){
+                                  CustomSnackBar.show(context, "Password must contain 6 characters");
+                                  return;
+                                }
                                 if (isStudentRegistration) {
                                   // Create a Student object
                                   Student student = Student(
@@ -488,13 +523,13 @@ class _SignupViewState extends State<SignupView> {
 
                   // Check if all fields are filled
                   bool areAllFieldsFilled =
-                      !_isAllFieldsEmpty(fieldValues: formFieldValues);
+                      !ValidationUtils.isAllFieldsEmpty(fieldValues: formFieldValues);
 
                   // Perform validation
                   if (!isMatchingPassword) {
-                    print("Passwords do not match");
+                    CustomSnackBar.show(context, "Passwords do not match");
                   } else if (!areAllFieldsFilled) {
-                    CustomSnackbar.show(context,"Fields cannot be empty");
+                    CustomSnackBar.show(context,"Fields cannot be empty");
                   } else {
                     // If passwords match and all fields are filled, proceed with signup
                     onSignup();

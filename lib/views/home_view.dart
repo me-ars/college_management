@@ -1,9 +1,14 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
+import 'package:college_management/core/constants/route_constants.dart';
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/views/shared/gallery_tile.dart';
 import 'package:college_management/views/shared/loading_view.dart';
 import 'package:college_management/views/widgets/custom_icon_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import '../app/base_view.dart';
 import '../view_models/home_view_model.dart';
 
@@ -17,6 +22,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
+    print(context.read<AppState>().faculty);
     Size size = MediaQuery.of(context).size;
     return BaseView<HomeViewModel>(
       onModelReady: (HomeViewModel model){
@@ -28,22 +34,35 @@ class _HomeViewState extends State<HomeView> {
             child: Scaffold(
               resizeToAvoidBottomInset: true,
               body: model.viewState == ViewState.ideal
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        homeScreeHead(
-                            height: size.height / 5.2,
-                            width: size.width,
-                            avatarText: "A"),
-                        GalleryTile( height: size.height / 5.2,
-                            width: size.width,images: []),
-                        Expanded(
-                          child: adminHomeBody(
-                            height: size.height / 4,
-                            width: size.width / 2.5,
+                  ? Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          homeScreeHead(
+                              height: size.height / 5.2,
+                              width: size.width,
+                              avatarText: "A"),
+                          SizedBox(
+                            height: size.height * 0.05,
                           ),
-                        )
-                      ],
+                          Center(
+                            child: GalleryTile(
+                                height: size.height / 5.2,
+                                width: size.width * 0.9,
+                                images: const [
+                                  "assets/demo_images/1.jpeg",
+                                  "assets/demo_images/11.jpeg",
+                                  "assets/demo_images/2.jpeg",
+                                  "assets/demo_images/3.jpeg"
+                                ]),
+                          ),
+                          Expanded(
+                            child: adminHomeBody(
+                              context: context,
+                            ),
+                          )
+                        ],
+                      ),
                     )
                   : LoadingView(
                       height: size.height * 0.3, width: size.width / 2.5),
@@ -74,7 +93,7 @@ Widget homeScreeHead(
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Column(
+               const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -86,7 +105,7 @@ Widget homeScreeHead(
                         color: AppPalette.primaryTextColor),
                   ),
                   Text(
-                    "Admin",
+                   "Admin",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
@@ -116,19 +135,75 @@ Widget homeScreeHead(
   );
 }
 
-Widget adminHomeBody({required double height, required double width}) {
-  List<String> iconNames = ["Teachers", "Students", "Fee", "Calender"];
-  return GridView.builder(
-    itemCount: 4,
-    gridDelegate:
-        const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-    itemBuilder: (context, index) {
-      return CustomIconTile(
-          height: height,
-          width: width,
-          onTap: () {},
-          iconImage: "",
-          optionName: iconNames[index]);
-    },
+Widget adminHomeBody({required BuildContext context}) {
+  Size size =MediaQuery.of(context).size;
+ var tileHeight=size.height * 0.2;
+var tileWidth=size.width / 4;
+  return Wrap(
+    spacing: 5, // Space between items horizontally
+    runSpacing: 10.0, // Space between items vertically
+    alignment: WrapAlignment.center, // Center align items
+    children: [
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.teachersView);
+        },
+        iconImage: "",
+        optionName: "Teachers",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.studentsView);
+        },
+        iconImage: "",
+        optionName: "Students",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.calenderView);
+        },
+        iconImage: "",
+        optionName: "Calender",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.announcements);
+        },
+        iconImage: "",
+        optionName: "Announcements",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.contactDetails);
+        },
+        iconImage: "",
+        optionName: "Contact details",
+      ),
+    ],
   );
+  //   GridView.builder(
+  //   itemCount: 4,
+  //   gridDelegate:
+  //       const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+  //   itemBuilder: (context, index) {
+  //     return CustomIconTile(
+  //         height: height,
+  //         width: width,
+  //         onTap: () {
+  //           context.goNamed(RouteConstants.calenderView);
+  //         },
+  //         iconImage: "",
+  //         optionName: iconNames[index]);
+  //   },
+  // );
 }

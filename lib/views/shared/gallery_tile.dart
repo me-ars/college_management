@@ -67,11 +67,11 @@ class _GalleryTileState extends State<GalleryTile> {
             });
           },
           itemBuilder: (context, index) {
-            return  Container();
-            //   Image.network(
-            //   widget.images[index],
-            //   fit: BoxFit.cover,
-            // );
+            return
+              Image.asset(
+              widget.images[index],
+              fit: BoxFit.cover,
+            );
           },
         ),
       ),

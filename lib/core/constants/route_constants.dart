@@ -6,5 +6,10 @@ class RouteConstants {
   static const String profileView = 'profileView';
   static const String leaveRequest = "leaveRequest";
   static const String examNotification = "examNotification";
-  static const String feePayment = "feePayment";
+  static const String feeDetails = "feeDetails";
+  static const String studentsView = "studentsView";
+  static const String teachersView = "teachersView";
+  static const String calenderView = "calenderView";
+  static const String announcements = 'announcements';
+  static const String contactDetails="contactDetails";
 }

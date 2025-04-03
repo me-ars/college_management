@@ -46,7 +46,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
             controller: widget.dateController,
             readOnly: true,
             decoration: InputDecoration(
-              labelStyle: const TextStyle(color: Colors.grey),
+              labelStyle: const TextStyle(color: AppPalette.primaryTextColor),
               labelText: widget.labelText.isNotEmpty ? widget.labelText : null,
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),

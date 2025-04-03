@@ -7,11 +7,14 @@ import 'package:college_management/view_models/admin/announcement_view_model.dar
 import 'package:college_management/view_models/admin/contact_view_model.dart';
 import 'package:college_management/view_models/admin/faculty_view_model.dart';
 import 'package:college_management/view_models/admin/fee_view_model.dart';
+import 'package:college_management/view_models/attendance_view_model.dart';
 import 'package:college_management/view_models/auth/login_view_model.dart';
 import 'package:college_management/view_models/auth/signup_view_model.dart';
 import 'package:college_management/view_models/calender_view_model.dart';
 import 'package:college_management/view_models/home_view_model.dart';
-import 'package:college_management/views/shared_view_models/students_view_model.dart';
+import 'package:college_management/view_models/internal_marks_view_model.dart';
+import 'package:college_management/view_models/request_view_model.dart';
+import 'package:college_management/view_models/shared_view_models/students_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'core/services/auth_services/auth_service.dart';
 import 'core/services/auth_services/auth_service_impl.dart';

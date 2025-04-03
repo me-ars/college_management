@@ -194,6 +194,7 @@ class _SignupViewState extends State<SignupView> {
                                 if (isStudentRegistration) {
                                   // Create a Student object
                                   Student student = Student(
+                                    sem: "1",
                                     firstName: _firstNameController.text,
                                     lastName: _lastNameController.text,
                                     studentId: _idController.text,

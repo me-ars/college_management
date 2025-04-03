@@ -46,6 +46,7 @@ class _CalenderViewState extends State<CalenderView> {
         }).toList();
 
         return Scaffold(
+          appBar: AppBar(title: const Text("Events"),backgroundColor: AppPalette.violetLt,),
           floatingActionButton: FloatingActionButton(
             backgroundColor: AppPalette.violetLt,
             onPressed: () {

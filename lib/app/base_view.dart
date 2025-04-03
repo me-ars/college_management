@@ -1,8 +1,10 @@
+import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/views/helper_classes/error_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../init_dependencies.dart';
+import '../utils/string_utils.dart';
 import '../view_models/base_view_model.dart';
 //
 // class BaseView<T extends BaseViewModel> extends StatefulWidget {
@@ -136,11 +138,26 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
     if (model.exception != null) {
       _showErrorWarning();
     }
+    _showSnackBarMessage();
+  }
+
+  void _showSnackBarMessage() {
+    if (!StringUtils.isEmptyString(model.snackBarMessage)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: AppPalette.violetLt,
+          content: Text(model.snackBarMessage!,
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontSize: 15)),
+        ));
+      });
+    }
   }
 
   _showErrorWarning() {
     if (_isDialogOpen) return; // Prevent multiple dialogs
-
     _isDialogOpen = true;
 
     WidgetsBinding.instance.addPostFrameCallback(

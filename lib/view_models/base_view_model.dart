@@ -15,6 +15,16 @@ class BaseViewModel extends ChangeNotifier {
   Function? _retryMethod;
 
   Function? get retryMethod => _retryMethod;
+
+  String? _snackBarMessage;
+
+  String? get snackBarMessage => _snackBarMessage;
+
+  void showSnackBar({required String snackBarMessage}) {
+    _snackBarMessage = snackBarMessage;
+    notifyListeners();
+  }
+
   void dispose() {
     super.dispose();
     _disposed = true;
@@ -28,10 +38,12 @@ class BaseViewModel extends ChangeNotifier {
   }
 
   showException({required dynamic error, required Function retryMethod}) {
+    print(error);
     if (error! is BaseException) {
-      _exception = AppException(error: error);
-    } else {
       _exception = error;
+
+    } else {
+      _exception = AppException(error: error.toString());
     }
     _retryMethod = retryMethod;
     notifyListeners();

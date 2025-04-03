@@ -60,7 +60,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
             value: StringUtils.isEmptyString(selectedValue)?null:selectedValue,
             hint: Text(
               widget.labelText,
-              style: const TextStyle(color: AppPalette.secondaryTextColor),
+              style: const TextStyle(color: AppPalette.primaryTextColor),
             ),
             isExpanded: true,
             dropdownColor: Colors.white,

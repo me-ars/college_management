@@ -98,6 +98,7 @@ class _LoginViewState extends State<LoginView> {
                           height: size.height * 0.06),
                       SizedBox(height: size.height * 0.01),
                       GestureDetector(onTap: (){
+                        print("navigate to signup");
                         GoRouter.of(context).goNamed(RouteConstants.signUp);
                       },
                         child: const Text(

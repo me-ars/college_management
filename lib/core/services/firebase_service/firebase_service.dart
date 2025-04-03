@@ -19,4 +19,8 @@ abstract class FirebaseService {
     required String documentId,
     required Map<String, dynamic> updatedData,
   });
+  Future<void> deleteMultipleDocuments({
+    required String collectionName,
+    required List<String> documentIds,
+  });
 }

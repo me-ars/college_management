@@ -83,5 +83,20 @@ class FirebaseServiceImpl extends FirebaseService {
       rethrow;
     }
   }
+  @override
+  Future<void> deleteMultipleDocuments({
+    required String collectionName,
+    required List<String> documentIds,
+  }) async {
+    try {
+      for (String documentId in documentIds) {
+        await _firestore.collection(collectionName).doc(documentId).delete();
+      }
+      debugPrint("✅ Successfully deleted multiple documents from $collectionName");
+    } catch (e, stackTrace) {
+      debugPrint("❌ Error deleting multiple documents: $e\nStackTrace: $stackTrace");
+      rethrow;
+    }
+  }
 }
 

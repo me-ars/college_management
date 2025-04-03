@@ -1,7 +1,9 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../app/base_view.dart';
 import '../view_models/admin/announcement_view_model.dart';
 
@@ -17,9 +19,9 @@ class _AnnouncementViewState extends State<AnnouncementView> {
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text("Full Message"),
-          content: Text(message),
+        return AlertDialog(backgroundColor: AppPalette.offWhite,
+          title: const Text(" Message",style: TextStyle(color: AppPalette.primaryTextColor),),
+          content: Text(message,style: const TextStyle(color: AppPalette.primaryTextColor),),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -39,6 +41,9 @@ class _AnnouncementViewState extends State<AnnouncementView> {
     return BaseView<AnnouncementViewModel>(
         onModelReady: (AnnouncementViewModel model) {
           model.onModelReady();
+        },
+        onDispose:(AnnouncementViewModel model) {
+          _announcementController.clear();
         },
         refresh: (AnnouncementViewModel model) {},
         builder: (context, model, child) {
@@ -62,13 +67,18 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                               color: AppPalette.violetLt,
                               borderRadius: BorderRadius.circular(10)),
                           child: ListTile(
-                            trailing: IconButton(
-                              onPressed: () {
-                                model.deleteAnnouncement(uid: model.announcements[index].uid);
-                              },
-                              icon: const Icon(
-                                Icons.delete,
-                                color: AppPalette.primaryTextColor,
+                            trailing: Visibility(
+                              visible: context.read<AppState>().admin &&
+                                  context.read<AppState>().faculty != null,
+                              child: IconButton(
+                                onPressed: () {
+                                  model.deleteAnnouncement(
+                                      uid: model.announcements[index].uid);
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: AppPalette.primaryTextColor,
+                                ),
                               ),
                             ),
                             title: Text(model.announcements[index].message),
@@ -80,31 +90,36 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          isPassword: false,
-                          width: size.width * 0.8,
-                          height: size.height * 0.1,
-                          labelText: "Enter the message",
-                          textEditingController: _announcementController,
+                Visibility(
+                  visible: context.read<AppState>().admin ||
+                      (context.read<AppState>().faculty != null &&
+                          context.read<AppState>().faculty?.isHOD == true),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            isPassword: false,
+                            width: size.width * 0.8,
+                            height: size.height * 0.1,
+                            labelText: "Enter the message",
+                            textEditingController: _announcementController,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      CustomButton(
-                        width: size.width * 0.1,
-                        height: size.height * 0.1,
-                        onPressed: () {
-                          model.sendAnnouncements(
-                              message: _announcementController.text);
-                          _announcementController.clear();
-                        },
-                        label: ">",
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        CustomButton(
+                          width: size.width * 0.1,
+                          height: size.height * 0.1,
+                          onPressed: () {
+                            model.sendAnnouncements(
+                                message: _announcementController.text);
+                            _announcementController.clear();
+                          },
+                          label: ">",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

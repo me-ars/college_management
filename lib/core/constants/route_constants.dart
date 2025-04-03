@@ -12,4 +12,7 @@ class RouteConstants {
   static const String calenderView = "calenderView";
   static const String announcements = 'announcements';
   static const String contactDetails="contactDetails";
+  static const String internalMarks = "internalMarks";
+  static const String attendance = "attendance";
+
 }

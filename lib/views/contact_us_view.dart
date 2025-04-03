@@ -1,3 +1,5 @@
+import 'package:college_management/app/app_state.dart';
+import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/core/models/contact_us_model.dart';
 import 'package:college_management/utils/validators.dart';
 import 'package:college_management/views/helper_classes/custom_snackbar.dart';
@@ -5,6 +7,7 @@ import 'package:college_management/views/shared/loading_view.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../app/base_view.dart';
 import '../core/enums/view_state.dart';
@@ -27,7 +30,6 @@ class _ContactUsViewState extends State<ContactUsView> {
     return BaseView<ContactUsViewModel>(
         onModelReady: (ContactUsViewModel model) async{
         await   model.onModelReady();
-          print(model.contactUsModel);
           _emailController.text = model.contactUsModel!.email;
           _phoneController.text = model.contactUsModel!.phone;
         },
@@ -39,16 +41,18 @@ class _ContactUsViewState extends State<ContactUsView> {
         builder: (context, model, child) {
           return SafeArea(
             child: Scaffold(
-              floatingActionButton:FloatingActionButton(onPressed: (){
-                model.add();
-              },),
+              appBar: AppBar(
+                title: const Text("Contact Details"),
+                backgroundColor: AppPalette.violetLt,
+              ),
               resizeToAvoidBottomInset: true,
               body: model.viewState == ViewState.ideal
                   ? Center(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          CustomTextField(
+                      child: !context.read<AppState>().admin
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                  CustomTextField(
                               width: size.width * 0.85,
                               height: size.height * 0.1,
                               isPassword: false,
@@ -80,7 +84,34 @@ class _ContactUsViewState extends State<ContactUsView> {
                             width: size.width * 0.85,
                             height: size.height * 0.1,
                           )
-                        ]))
+                                ])
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Email",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppPalette.primaryTextColor),
+                                ),
+                                Text(model.contactUsModel!.email,
+                                    style: const TextStyle(
+                                        fontSize: 22,
+                                        color: AppPalette.primaryTextColor)),
+                                const Text(
+                                  "Phone",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppPalette.primaryTextColor),
+                                ),
+                                Text(model.contactUsModel!.phone,
+                                    style: const TextStyle(
+                                        fontSize: 22,
+                                        color: AppPalette.primaryTextColor))
+                              ],
+                            ))
                   : LoadingView(
                       height: size.height * 0.3, width: size.width / 2.5),
             ),

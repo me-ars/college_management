@@ -1,9 +1,10 @@
 import 'package:college_management/core/constants/app_pallete.dart';
+import 'package:college_management/core/constants/route_constants.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
-
 class ErrorView {
   static showErrorView(
       {required BuildContext context, required Function retryMethod}) {
@@ -35,6 +36,13 @@ class ErrorView {
                 label: "Retry",
                 onPressed: () {
                   retryMethod();
+                },
+                width: size.width * 0.7,
+                height: size.height * 0.08),
+            CustomButton(
+                label: "Return home",
+                onPressed: () {
+                  context.replaceNamed(RouteConstants.home);
                 },
                 width: size.width * 0.7,
                 height: size.height * 0.08),

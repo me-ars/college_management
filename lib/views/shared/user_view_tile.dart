@@ -114,52 +114,53 @@ class UserViewTile extends StatelessWidget {
                     if (canEdit) // ✅ Properly handling conditional visibility
                       IconButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                backgroundColor: AppPalette.offWhite,
-                                content: Container(
-                                  height: size.height / 4.7,
-                                  width: size.width * 0.7,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15)),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        name,
-                                        style: const TextStyle(
-                                            color: AppPalette.primaryTextColor,
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      Text(
-                                        uid,
-                                        style: const TextStyle(
-                                            color: AppPalette.primaryTextColor,
-                                            fontSize: 20),
-                                      ),
-                                      Text(
-                                        course,
-                                        style: const TextStyle(
-                                            color: AppPalette.primaryTextColor,
-                                            fontSize: 20),
-                                      ),
-                                      CustomButton(
-                                        label: "Make HOD",
-                                        onPressed: () {
-                                          onEdit();
-                                        },
-                                        width: width * 0.9,
-                                        height: height * 0.4,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                          onEdit();
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (context) {
+                          //     return AlertDialog(
+                          //       backgroundColor: AppPalette.offWhite,
+                          //       content: Container(
+                          //         height: size.height / 4.7,
+                          //         width: size.width * 0.7,
+                          //         decoration: BoxDecoration(
+                          //             borderRadius: BorderRadius.circular(15)),
+                          //         child: Column(
+                          //           crossAxisAlignment: CrossAxisAlignment.center,
+                          //           children: [
+                          //             Text(
+                          //               name,
+                          //               style: const TextStyle(
+                          //                   color: AppPalette.primaryTextColor,
+                          //                   fontSize: 25,
+                          //                   fontWeight: FontWeight.w600),
+                          //             ),
+                          //             Text(
+                          //               uid,
+                          //               style: const TextStyle(
+                          //                   color: AppPalette.primaryTextColor,
+                          //                   fontSize: 20),
+                          //             ),
+                          //             Text(
+                          //               course,
+                          //               style: const TextStyle(
+                          //                   color: AppPalette.primaryTextColor,
+                          //                   fontSize: 20),
+                          //             ),
+                          //             CustomButton(
+                          //               label: "Make HOD",
+                          //               onPressed: () {
+                          //                 onEdit();
+                          //               },
+                          //               width: width * 0.9,
+                          //               height: height * 0.4,
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //     );
+                          //   },
+                          // );
                         },
                         icon: const Icon(
                           Icons.edit,

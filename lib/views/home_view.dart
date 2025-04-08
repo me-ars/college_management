@@ -41,13 +41,17 @@ class _HomeViewState extends State<HomeView> {
                             height: size.height / 5.2,
                             width: size.width,
                             avatarText: "A",
-                          ),
+                              context: context),
                           SizedBox(height: size.height * 0.02),
 
                           Center(child:
-                          adminHomeBody(context: context)),
-                          // facultyHomeBody(context: context)),
-
+                                  // context.read<AppState>().faculty != null
+                                  //         ?
+                                  // facultyHomeBody(context: context)),
+                          //         : context.read<AppState>().student != null
+                          //             ?
+                          studentHomeBody(context: context)),
+                          // : adminHomeBody(context: context)),
                           Center(
                             child: GalleryTile(
                               height: size.height / 5.2,
@@ -77,7 +81,8 @@ class _HomeViewState extends State<HomeView> {
 Widget homeScreeHead(
     {required double height,
     required double width,
-    required String avatarText}) {
+    required String avatarText,
+    required BuildContext context}) {
   return Container(
     height: height,
     decoration: const BoxDecoration(
@@ -95,37 +100,50 @@ Widget homeScreeHead(
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-               const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Admin",
-                    style: TextStyle(
+                  Text('Aparna',
+                    // context.read<AppState>().faculty != null
+                    //     ? context.read<AppState>().faculty!.firstName
+                    //     : context.read<AppState>().student != null
+                    //         ? context.read<AppState>().student!.firstName
+                    //         : "Admin",
+                    style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: AppPalette.primaryTextColor),
                   ),
-                  Text(
-                   "Admin",
-                    style: TextStyle(
+                  Text('MCA',
+                    // context.read<AppState>().faculty != null
+                    //     ? '${context.read<AppState>().faculty!.course} Faculty'
+                    //     : context.read<AppState>().student != null
+                    //     ? context.read<AppState>().student!.course
+                    //     : "Admin",
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: AppPalette.primaryTextColor),
                   ),
                 ],
               ),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: width * 0.4, bottom: height * 0.15),
-                child: CircleAvatar(
-                  backgroundColor: AppPalette.offWhite,
-                  child: Text(
-                    avatarText,
-                    style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: AppPalette.primaryTextColor),
+              GestureDetector(
+                onTap: () {
+                  context.goNamed(RouteConstants.profileView);
+                },
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: width * 0.4, bottom: height * 0.15),
+                  child: CircleAvatar(
+                    backgroundColor: AppPalette.offWhite,
+                    child: Text(
+                      avatarText,
+                      style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: AppPalette.primaryTextColor),
+                    ),
                   ),
                 ),
               ),
@@ -295,19 +313,10 @@ Widget studentHomeBody({required BuildContext context}) {
             height: tileHeight,
             width: tileWidth,
             onTap: () {
-              context.goNamed(RouteConstants.internalMarks);
+              context.goNamed(RouteConstants.studentInternalMark);
             },
             iconImage: "assets/icons/mark.png",
             optionName: "Internal Mark",
-          ),
-          CustomIconTile(
-            height: tileHeight,
-            width: tileWidth,
-            onTap: () {
-              context.goNamed(RouteConstants.studentsView);
-            },
-            iconImage: "assets/icons/students.png",
-            optionName: "Students",
           ),
           CustomIconTile(
             height: tileHeight,
@@ -340,10 +349,19 @@ Widget studentHomeBody({required BuildContext context}) {
             height: tileHeight,
             width: tileWidth,
             onTap: () {
-              context.goNamed(RouteConstants.attendance);
+              context.goNamed(RouteConstants.studentAttendance);
             },
             iconImage: "assets/icons/attendance.png",
             optionName: "Attendance",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.viewFee);
+            },
+            iconImage: "assets/icons/request_.png",
+            optionName: "View Fee",
           ),
           // Last row with left alignment
           Row(
@@ -353,7 +371,7 @@ Widget studentHomeBody({required BuildContext context}) {
                 height: tileHeight,
                 width: tileWidth,
                 onTap: () {
-                  context.goNamed(RouteConstants.leaveRequest);
+                  context.goNamed(RouteConstants.sendRequest);
                 },
                 iconImage: "assets/icons/request_.png",
                 optionName: "Request",

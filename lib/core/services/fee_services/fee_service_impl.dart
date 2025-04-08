@@ -72,7 +72,6 @@ class FeeServiceImpl implements FeeService {
           "feeDetails": updatedFeeList,
         },
       );
-
       debugPrint("✅ Successfully deleted fee with uid: $feeUid from $documentId");
     } catch (e, stackTrace) {
       debugPrint("❌ Error deleting fee data: $e\nStackTrace: $stackTrace");

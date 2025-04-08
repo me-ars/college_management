@@ -51,7 +51,7 @@ class _LoginViewState extends State<LoginView> {
                       SizedBox(height: size.height * 0.08),
                       CustomTextField(
                         textEditingController: _usernameController,
-                        labelText: "Username",
+                        labelText: "User Id",
                         width: size.width * 0.85,
                         height: size.height * 0.08,
                         isPassword: false,
@@ -98,7 +98,6 @@ class _LoginViewState extends State<LoginView> {
                           height: size.height * 0.06),
                       SizedBox(height: size.height * 0.01),
                       GestureDetector(onTap: (){
-                        print("navigate to signup");
                         GoRouter.of(context).goNamed(RouteConstants.signUp);
                       },
                         child: const Text(

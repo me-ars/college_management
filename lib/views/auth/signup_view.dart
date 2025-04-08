@@ -52,24 +52,24 @@ class _SignupViewState extends State<SignupView> {
     return BaseView<SignupViewModel>(
       refresh: (SignupViewModel model) {},
       onDispose: (SignupViewModel model){
-         _firstNameController.dispose();
-         _lastNameController.dispose();
-         _idController.dispose();
-         _emailController.dispose();
-         _phoneController.dispose();
-         _joiningDateController.dispose();
-         _batchNameController.dispose();
-         _dobController.dispose();
-         _genderController.dispose();
-         _coNameController.dispose();
-        _confirmPasswordController.dispose();
-        _passwordController.dispose();_bachelorsController.dispose();
-        _plusTwoController.dispose();
-        _sslcController.dispose();
-        _addressController.dispose();
-        _coPhoneController.dispose();
-        _coPhoneController.dispose();
-        _coNameController.dispose();
+         _firstNameController.clear();
+         _lastNameController.clear();
+         _idController.clear();
+         _emailController.clear();
+         _phoneController.clear();
+         _joiningDateController.clear();
+         _batchNameController.clear();
+         _dobController.clear();
+         _genderController.clear();
+         _coNameController.clear();
+        _confirmPasswordController.clear();
+        _passwordController.clear();_bachelorsController.clear();
+        _plusTwoController.clear();
+        _sslcController.clear();
+        _addressController.clear();
+        _coPhoneController.clear();
+        _coPhoneController.clear();
+        _coNameController.clear();
       },
       builder: (context, model, child) {
         return SafeArea(
@@ -116,9 +116,9 @@ class _SignupViewState extends State<SignupView> {
                             _emailController.text,
                             _phoneController.text
                           ])) {
-                            if (!ValidationUtils.isValidName(
+                            if (ValidationUtils.isValidName(
                                     _firstNameController.text) ||
-                                !ValidationUtils.isValidName(
+                                ValidationUtils.isValidName(
                                     _lastNameController.text)) {
                               CustomSnackBar.show(context, "Invalid Name");
                               return;

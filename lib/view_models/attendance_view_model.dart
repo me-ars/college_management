@@ -134,7 +134,7 @@ class AttendanceViewModel extends BaseViewModel {
         collectionName: FirebaseCollectionConstants.attendance,
         documentId:
         "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
-        data: {'records': attendanceData}, // Firebase expects a map, wrapping in a field
+        data: {'attendance': attendanceData}, // Firebase expects a map, wrapping in a field
       );
 
       setViewState(state: ViewState.ideal);

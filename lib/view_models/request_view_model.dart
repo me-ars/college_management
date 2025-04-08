@@ -2,7 +2,6 @@ import 'package:college_management/core/constants/firebase_collection_constants.
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/core/models/leave_request.dart';
 import 'package:college_management/view_models/base_view_model.dart';
-
 import '../core/services/firebase_service/firebase_service.dart';
 
 class RequestViewModel extends BaseViewModel {
@@ -28,7 +27,6 @@ class RequestViewModel extends BaseViewModel {
     _fetchVerifiedList = fetchVerified;
     notifyListeners(); // Ensure UI updates
   }
-
   Future<void> onModelReady(
       {required String facultyCourse, required String sem}) async {
     try {
@@ -43,23 +41,30 @@ class RequestViewModel extends BaseViewModel {
         collectionName: facultyCourse.toLowerCase() == "mca"
             ? FirebaseCollectionConstants.mcaLeaveApplications
             : FirebaseCollectionConstants.mbaLeaveApplications,
+        documentId: "123456789", // Fetch a specific document
       );
 
-      if (data != null) {
-        for (var requestMap in data) {
-          LeaveRequest request = LeaveRequest.fromMap(requestMap);
-          _allrequest.add(request);
+      if (data.isNotEmpty) {
+        var document = data.first; // Get the first document
 
-          if (request.sem == sem) {
-            if (request.verified) {
-              _verifiedRequest.add(request);
-            } else if (DateTime.parse(request.fromDate)
-                .isAfter(DateTime.now())) {
-              _unVerifiedRequest.add(request);
+        if (document.containsKey("leaveRequests")) {
+          var requests = document["leaveRequests"] as List<dynamic>;
+
+          for (var requestMap in requests) {
+            LeaveRequest request = LeaveRequest.fromMap(requestMap);
+            _allrequest.add(request);
+
+            if (request.sem == sem) {
+              if (request.verified) {
+                _verifiedRequest.add(request);
+              } else if (DateTime.parse(request.fromDate).isAfter(DateTime.now())) {
+                _unVerifiedRequest.add(request);
+              }
             }
           }
         }
       }
+
       if (_fetchVerifiedList) {
         if (_verifiedRequest.isEmpty) {
           setViewState(state: ViewState.empty);
@@ -78,6 +83,7 @@ class RequestViewModel extends BaseViewModel {
       );
     }
   }
+
 
   clearAllRequests({required String facultyCourse}) async {
     try {
@@ -100,17 +106,49 @@ class RequestViewModel extends BaseViewModel {
           });
     }
   }
-
   Future<void> verifyRequest({required LeaveRequest request}) async {
     try {
       setViewState(state: ViewState.busy);
 
+      // Fetch existing data
+      var dataList = await _firebaseService.getData(
+        collectionName: request.course.toLowerCase() == "mca"
+            ? FirebaseCollectionConstants.mcaLeaveApplications
+            : FirebaseCollectionConstants.mbaLeaveApplications,
+        documentId: "123456789", // Fetch the correct document
+      );
+
+      Map<String, dynamic>? document;
+
+      if (dataList.isNotEmpty) {
+        document = dataList.first; // Get the first document
+      }
+
+      if (document == null || !document.containsKey("leaveRequests")) {
+        print("⚠️ No leave requests found!");
+        return;
+      }
+
+      List<dynamic> leaveRequests = List.from(document["leaveRequests"]);
+
+      // Update the specific request in the list
+      for (int i = 0; i < leaveRequests.length; i++) {
+        LeaveRequest tempRequest = LeaveRequest.fromMap(leaveRequests[i]);
+        if (tempRequest.uid == request.uid) {
+          leaveRequests[i] = request.copyWith(verified: true).toMap();
+          break;
+        }
+      }
+
+      // Update Firestore
       await _firebaseService.updateData(
         collectionName: request.course.toLowerCase() == "mca"
             ? FirebaseCollectionConstants.mcaLeaveApplications
             : FirebaseCollectionConstants.mbaLeaveApplications,
-        documentId: request.uid,
-        updatedData: request.copyWith(verified: true).toMap(),
+        documentId: "123456789",
+        updatedData: {
+          "leaveRequests": leaveRequests
+        },
       );
 
       // Move request to verified list

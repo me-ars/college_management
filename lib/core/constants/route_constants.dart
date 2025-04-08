@@ -1,4 +1,6 @@
-class RouteConstants {
+class RouteConstants{
+static const String profile = "profile";
+
   static const String login = 'login';
   static const String signUp = 'signUp';
   static const String forgetPassword = "forgetPassword";
@@ -14,5 +16,11 @@ class RouteConstants {
   static const String contactDetails="contactDetails";
   static const String internalMarks = "internalMarks";
   static const String attendance = "attendance";
+
+//student module
+  static const String studentAttendance = "studentAttendance";
+  static const String studentInternalMark = "studentInternalMark";
+  static const String sendRequest='sendLeaveRequest';
+  static const String viewFee='viewFee';
 
 }

@@ -1,7 +1,7 @@
 class FirebaseCollectionConstants {
   static const attendance='attendance';
   static const users = "users";
-  static const fee = "feeCollection";
+  static const fee = "fees";
   static const announcements = "announcements";
   static const calenderEvents = "calenderEvents";
   static const contactDetails = "contactDetails";

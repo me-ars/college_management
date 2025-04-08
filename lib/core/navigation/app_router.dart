@@ -1,3 +1,4 @@
+import 'package:college_management/view_models/students_attendance_view_model.dart';
 import 'package:college_management/views/attendence_view.dart';
 import 'package:college_management/views/auth/signup_view.dart';
 import 'package:college_management/views/calender_view.dart';
@@ -5,7 +6,12 @@ import 'package:college_management/views/contact_us_view.dart';
 import 'package:college_management/views/fee_management_view.dart';
 import 'package:college_management/views/home_view.dart';
 import 'package:college_management/views/internal_mark_view.dart';
+import 'package:college_management/views/profile_view.dart';
 import 'package:college_management/views/students_view.dart';
+import 'package:college_management/views/students_view/leave_application_view.dart';
+import 'package:college_management/views/students_view/student_attendance_view.dart';
+import 'package:college_management/views/students_view/student_fee_view.dart';
+import 'package:college_management/views/students_view/students_internal_mark_view.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../views/announcement_view.dart';
@@ -114,6 +120,7 @@ class AppRouter {
 
   late final appRouter = GoRouter(
     initialLocation: '/home',
+
     // redirect: (context, state) {
     //   // If the user is not logged in and not already on the login or signup page, redirect to login
     //   if (_appState.faculty == null && _appState.student == null && !_appState.admin) {
@@ -225,6 +232,46 @@ class AppRouter {
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.attendance),
               child:AttendanceView(),
+            ),
+          ),
+          GoRoute(
+            name: RouteConstants.profileView,
+            path: '/profileView',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+              key: ValueKey<String>(RouteConstants.profileView),
+              child: ProfileView(),
+            ),
+          ),
+          GoRoute(
+            name: RouteConstants.sendRequest,
+            path: '/sendRequest',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+              key: ValueKey<String>(RouteConstants.profileView),
+              child: LeaveApplicationView(),
+            ),
+          ),
+          GoRoute(
+            name: RouteConstants.viewFee,
+            path: '/viewFee',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+              key: ValueKey<String>(RouteConstants.viewFee),
+              child: StudentFeeView(),
+            ),
+          ),
+          GoRoute(
+            name: RouteConstants.studentAttendance,
+            path: '/studentsAttendance',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+              key:  ValueKey<String>(RouteConstants.studentAttendance),
+              child: StudentAttendanceView(),
+            ),
+          ),
+          GoRoute(
+            name: RouteConstants.studentInternalMark,
+            path: '/studentsInternalMark',
+            pageBuilder: (context, state) => const MaterialPage<void>(
+              key:  ValueKey<String>(RouteConstants.studentInternalMark),
+              child: StudentsInternalMarkView(),
             ),
           ),
         ],

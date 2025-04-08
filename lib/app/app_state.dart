@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../core/models/faculty.dart';
 import '../core/models/student.dart';
 import '../core/services/firebase_service/firebase_service.dart';
@@ -33,6 +32,7 @@ class AppState extends ChangeNotifier {
     } else {
       _student = student;
     }
+
     notifyListeners();
   }
 }

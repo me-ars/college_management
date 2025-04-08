@@ -11,6 +11,10 @@ abstract class FirebaseService {
     dynamic filterValue,
   });
 
+  Future<List<String>> getDocumentIdsByStudentIdInAttendance({
+    required String collectionName,
+    required String studentId,
+  });
   Future<void> deleteData(
       {required String collectionName, required String documentId});
 

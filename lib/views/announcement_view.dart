@@ -1,5 +1,7 @@
 import 'package:college_management/app/app_state.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
+import 'package:college_management/core/enums/view_state.dart';
+import 'package:college_management/views/shared/loading_view.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +54,7 @@ class _AnnouncementViewState extends State<AnnouncementView> {
             appBar: AppBar(
                 backgroundColor: AppPalette.violetLt,
                 title: const Text("Announcements")),
-            body: Column(
+            body: model.viewState==ViewState.ideal?Column(
               children: [
                 Expanded(
                   child: ListView.builder(
@@ -123,7 +125,8 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                   ),
                 ),
               ],
-            ),
+            ):model.viewState==ViewState.empty?Center(child: Text('No announcement'),):LoadingView(
+                height: size.height * 0.3, width: size.width / 2.5),
           ));
         });
   }

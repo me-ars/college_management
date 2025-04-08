@@ -16,67 +16,82 @@ class InternalMarksViewModel extends BaseViewModel {
   List<Faculty> _faculty = [];
   List<Student> _students = [];
   List<Student> _filteredStudents = [];
+  List<InternalMark> _internalMarks = [];
   List<StudentInternalMark> _studentInternalMarks = [];
 
   List<Faculty> get faculty => _faculty;
   List<Student> get students => _students;
   List<Student> get filteredStudents => _filteredStudents;
+  List<InternalMark> get internalMarks => _internalMarks;
   List<StudentInternalMark> get studentInternalMarks => _studentInternalMarks;
 
   Future<void> onModelReady({required String sem, required String course}) async {
     try {
       setViewState(state: ViewState.busy);
       _filteredStudents.clear();
+      _internalMarks.clear();
       _studentInternalMarks.clear();
 
-      // Fetch users (students + faculty)
+      // Fetch all users (faculty and students)
       var userData = await _firebaseService.getData(
         collectionName: FirebaseCollectionConstants.users,
       );
 
-      // Fetch internal marks
+      // Determine collection name based on course
       String collectionName = course == "MCA"
           ? FirebaseCollectionConstants.mcaInternalMark
           : FirebaseCollectionConstants.mbaInternalMark;
 
+      // Fetch internal marks collection once
       var internalMarksData = await _firebaseService.getData(
         collectionName: collectionName,
       );
 
-      // Process fetched internal marks
-      if (internalMarksData != null) {
-        for (var doc in internalMarksData) {
-          _studentInternalMarks.add(StudentInternalMark(
-            studentId: doc['studentId'] ?? '',
-            internalMarks: (doc['internalMarks'] as List<dynamic>?)?.map((e) {
-              return InternalMark.fromMap(e as Map<String, dynamic>);
-            }).toList() ?? [], // Ensure list is always valid
-          ));
-        }
-      }
-
-      // Process user data
+      // Populate faculty and student lists
       if (userData != null && userData.isNotEmpty) {
         _faculty.clear();
         _students.clear();
 
         for (var item in userData) {
           if (item.containsKey("employeeId")) {
-            _faculty.add(Faculty.fromMap(item)); // Faculty
+            _faculty.add(Faculty.fromMap(item));
           } else if (item.containsKey("studentId")) {
-            _students.add(Student.fromMap(item)); // Student
+            _students.add(Student.fromMap(item));
           }
         }
       }
-print(_studentInternalMarks);
-      // Filter students by semester and course
+
+      // Filter students based on sem and course
       for (var student in _students) {
         if (student.sem == sem && student.course == course) {
           _filteredStudents.add(student);
         }
       }
+
+      // Map internal marks to filtered students
+      if (_filteredStudents.isNotEmpty && internalMarksData != null) {
+        for (var item in internalMarksData) {
+          final studentId = item['studentId'];
+          final marksRaw = item['internalMarks'] ?? [];
+
+          // Check if the student is in the filtered list
+          final exists = _filteredStudents.any((s) => s.studentId == studentId);
+          if (!exists) continue;
+
+          List<InternalMark> marks = (marksRaw as List).map((markData) {
+            return InternalMark.fromMap(markData as Map<String, dynamic>);
+          }).toList();
+
+          _studentInternalMarks.add(
+            StudentInternalMark(studentId: studentId, internalMarks: marks),
+          );
+        }
+      }
+
       setViewState(state: _filteredStudents.isEmpty ? ViewState.empty : ViewState.ideal);
-    } catch (e) {
+    } catch (e, s) {
+      print("Error in onModelReady: $e");
+      print("Stacktrace: $s");
       showException(
         error: e,
         retryMethod: () {
@@ -85,36 +100,42 @@ print(_studentInternalMarks);
       );
     }
   }
-
-  Future<void> fetchStudentInternalMarks(String studentId, String course) async {
-    try {
-      setViewState(state: ViewState.busy);
-      _studentInternalMarks.clear();
-
-      String collectionName = course == "MCA"
-          ? FirebaseCollectionConstants.mcaInternalMark
-          : FirebaseCollectionConstants.mbaInternalMark;
-
-      DocumentSnapshot docSnap =
-      await FirebaseFirestore.instance.collection(collectionName).doc(studentId).get();
-
-      if (docSnap.exists) {
-        Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-        _studentInternalMarks.add(StudentInternalMark.fromMap(data));
-      } else {
-        print("No internal marks found for this student.");
-      }
-
-      setViewState(state: ViewState.ideal);
-    } catch (e) {
-      showException(
-        error: e,
-        retryMethod: () {
-          fetchStudentInternalMarks(studentId, course);
-        },
-      );
-    }
-  }
+// }
+//
+//   Future<void> fetchStudentInternalMarks(String studentId, String course) async {
+//     try {
+//       setViewState(state: ViewState.busy);
+//       _internalMarks.clear(); // ✅ Updated here
+//
+//       String collectionName = course == "MCA"
+//           ? FirebaseCollectionConstants.mcaInternalMark
+//           : FirebaseCollectionConstants.mbaInternalMark;
+//
+//       DocumentSnapshot docSnap = await FirebaseFirestore.instance
+//           .collection(collectionName)
+//           .doc(studentId)
+//           .get();
+//
+//       if (docSnap.exists) {
+//         Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+//         final marks = data['internalMarks'] as List<dynamic>? ?? [];
+//
+//         for (var mark in marks) {
+//           _internalMarks.add(InternalMark.fromMap(
+//               mark as Map<String, dynamic>)); // ✅ Updated here
+//         }
+//       }
+//
+//       setViewState(state: ViewState.ideal);
+//     } catch (e) {
+//       showException(
+//         error: e,
+//         retryMethod: () {
+//           fetchStudentInternalMarks(studentId, course);
+//         },
+//       );
+//     }
+//   }
 
   Future<void> addInternalMark({required InternalMark internalMark}) async {
     try {
@@ -125,50 +146,46 @@ print(_studentInternalMarks);
       DocumentReference docRef = FirebaseFirestore.instance
           .collection(collectionName)
           .doc(internalMark.studentId);
+
       DocumentSnapshot docSnap = await docRef.get();
 
       if (docSnap.exists) {
-        // Get existing marks list
         List<dynamic> existingMarks =
             (docSnap.data() as Map<String, dynamic>)['internalMarks'] ?? [];
 
-        // Update if mark with the same UID exists
         bool markExists =
         existingMarks.any((mark) => mark['uid'] == internalMark.uid);
 
         if (markExists) {
           existingMarks = existingMarks.map((mark) {
             if (mark['uid'] == internalMark.uid) {
-              return internalMark.toMap(); // Replace with updated mark
+              return internalMark.toMap();
             }
             return mark;
           }).toList();
         } else {
-          // Add new mark
           existingMarks.add(internalMark.toMap());
         }
 
-        // Update Firestore document
         await _firebaseService.updateData(
           collectionName: collectionName,
           documentId: internalMark.studentId,
           updatedData: {
-            'internalMarks': existingMarks, // Ensures previous marks are retained
-            'studentId': internalMark.studentId, // Ensures studentId is stored properly
+            'internalMarks': existingMarks,
+            'studentId': internalMark.studentId,
           },
         );
-
       } else {
-        // Create a new document
         await _firebaseService.setData(
           collectionName: collectionName,
           documentId: internalMark.studentId,
           data: {
             'studentId': internalMark.studentId,
-            'internalMarks': [internalMark.toMap()]
+            'internalMarks': [internalMark.toMap()],
           },
         );
       }
+
       showSnackBar(snackBarMessage: "Internal mark added successfully");
     } catch (e) {
       showException(

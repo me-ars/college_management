@@ -12,9 +12,6 @@ class ErrorView {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        print(Navigator.canPop(context));
-        print(Navigator.canPop(context));
-
       },
       child: Container(
         decoration: BoxDecoration(

@@ -7,7 +7,7 @@ import 'app/mes_aimat.dart';
 import 'init_dependencies.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initDependencies();
+  await initDependencies(); //init
   await Firebase.initializeApp(
       options: const FirebaseOptions(
           apiKey: "AIzaSyBqNLUFTita28e-pHv5HfjzwJRx_kLXBL8",
@@ -17,7 +17,7 @@ void main() async {
 
   Map<String, dynamic>? userData = await getUser();
 
-  Faculty? faculty;
+  Faculty? faculty;//value
   Student? student;
   bool isAdmin = false;
 

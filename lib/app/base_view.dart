@@ -1,7 +1,10 @@
+import 'package:college_management/core/constants/app_pallete.dart';
+import 'package:college_management/views/helper_classes/error_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../init_dependencies.dart';
+import '../utils/string_utils.dart';
 import '../view_models/base_view_model.dart';
 
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
@@ -32,11 +35,12 @@ class BaseView<T extends BaseViewModel> extends StatefulWidget {
 
 class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   late T model = locator<T>();
-
+  bool _isDialogOpen = false; // Track if dialog is open
 
   @override
   void initState() {
     super.initState();
+    model.addListener(_eventListener);
     if (widget.onModelReady != null && mounted) {
       widget.onModelReady!(model);
     }
@@ -49,10 +53,78 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
     }
     super.dispose();
   }
+
+  _eventListener() {
+    if (model.exception != null) {
+      _showErrorWarning();
+    }
+    _showSnackBarMessage();
+  }
+
+  void _showSnackBarMessage() {
+    if (!StringUtils.isEmptyString(model.snackBarMessage)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: AppPalette.violetLt,
+          content: Text(model.snackBarMessage!,
+              style: Theme.of(context)
+                  .textTheme
+                  .displayMedium!
+                  .copyWith(fontSize: 15)),
+        ));
+      });
+    }
+  }
+
+  _showErrorWarning() {
+    if (_isDialogOpen) return; // Prevent multiple dialogs
+    _isDialogOpen = true;
+
+    WidgetsBinding.instance.addPostFrameCallback(
+          (_) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: ErrorView.showErrorView(
+                context: context,
+                retryMethod: () {
+                  model.retryMethod?.call();
+                },
+              ),
+            );
+          },
+        ).then((_) {
+          _isDialogOpen = false; // Reset when dialog is closed
+          model.showException(error: null, retryMethod: () {}); // Clear exception
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<T>(
+    return PopScope(
+      canPop: false, // We handle back press manually
+      onPopInvoked: (didPop) {
+        if (didPop) return; // Prevent double pop
+
+        if (_isDialogOpen) {
+          Navigator.of(context).pop(); // Close dialog
+        } else {
+          // Check if it's the Home or Login screen
+          bool isHomeOrLogin = ModalRoute.of(context)?.settings.name == "/home" ||
+              ModalRoute.of(context)?.settings.name == "/login";
+
+          if (!isHomeOrLogin) {
+            Navigator.of(context).pop(); // Pop the current screen
+          }
+        }
+      },
+      child: ChangeNotifierProvider<T>(
         create: (BuildContext context) => model,
-        child: Consumer<T>(builder: widget.builder));
+        child: Consumer<T>(builder: widget.builder),
+      ),
+    );
   }
 }

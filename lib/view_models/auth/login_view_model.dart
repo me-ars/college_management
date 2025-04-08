@@ -62,7 +62,11 @@ class LoginViewModel extends BaseViewModel {
         print("User not found.");
       }
     } catch (e) {
-      print("Error in login: $e");
+      showException(
+          error: e,
+          retryMethod: () {
+            login(appState: appState, userId: userId, password: password);
+          });
     } finally {
       setViewState(state: ViewState.ideal);
     }

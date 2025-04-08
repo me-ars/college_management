@@ -1,4 +1,5 @@
 class Student {
+  final String? sem;
   final String firstName;
   final String lastName;
   final String studentId;
@@ -17,6 +18,7 @@ class Student {
   final String bachelors;
 
   Student({
+    required this.sem,
     required this.firstName,
     required this.lastName,
     required this.studentId,
@@ -38,6 +40,7 @@ class Student {
   // Convert Student object to a Map
   Map<String, dynamic> toMap() {
     return {
+      'sem': sem,
       'firstName': firstName,
       'lastName': lastName,
       'studentId': studentId,
@@ -56,8 +59,11 @@ class Student {
       'bachelors': bachelors,
     };
   }
+
+  // Create a Student object from a Map
   factory Student.fromMap(Map<String, dynamic> map) {
     return Student(
+      sem: map['sem'],
       firstName: map['firstName'],
       lastName: map['lastName'],
       studentId: map['studentId'],
@@ -74,6 +80,47 @@ class Student {
       sslc: map['sslc'],
       plusTwo: map['plusTwo'],
       bachelors: map['bachelors'],
+    );
+  }
+
+  // CopyWith method to create a modified copy of the Student object
+  Student copyWith({
+    String? sem,
+    String? firstName,
+    String? lastName,
+    String? studentId,
+    String? course,
+    String? joiningDate,
+    String? batch,
+    String? gender,
+    String? dob,
+    String? phone,
+    String? email,
+    String? guardianName,
+    String? guardianPhone,
+    String? address,
+    String? sslc,
+    String? plusTwo,
+    String? bachelors,
+  }) {
+    return Student(
+      sem: sem ?? this.sem,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      studentId: studentId ?? this.studentId,
+      course: course ?? this.course,
+      joiningDate: joiningDate ?? this.joiningDate,
+      batch: batch ?? this.batch,
+      gender: gender ?? this.gender,
+      dob: dob ?? this.dob,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      guardianName: guardianName ?? this.guardianName,
+      guardianPhone: guardianPhone ?? this.guardianPhone,
+      address: address ?? this.address,
+      sslc: sslc ?? this.sslc,
+      plusTwo: plusTwo ?? this.plusTwo,
+      bachelors: bachelors ?? this.bachelors,
     );
   }
 }

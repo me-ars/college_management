@@ -1,12 +1,15 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
+import 'package:college_management/core/constants/route_constants.dart';
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/views/shared/gallery_tile.dart';
 import 'package:college_management/views/shared/loading_view.dart';
 import 'package:college_management/views/widgets/custom_icon_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../app/base_view.dart';
 import '../view_models/home_view_model.dart';
-
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
@@ -19,44 +22,67 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return BaseView<HomeViewModel>(
-      onModelReady: (HomeViewModel model){
+      onModelReady: (HomeViewModel model) {
+        print(context.read<AppState>().faculty!.isHOD);
         model.onModelReady();
       },
-        refresh: (HomeViewModel model) {},
-        builder: (context, model, child) {
-          return SafeArea(
-            child: Scaffold(
-              resizeToAvoidBottomInset: true,
-              body: model.viewState == ViewState.ideal
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        homeScreeHead(
+      refresh: (HomeViewModel model) {},
+      builder: (context, model, child) {
+        return SafeArea(
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            body: model.viewState == ViewState.ideal
+                ? Center(
+                  child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          homeScreeHead(
                             height: size.height / 5.2,
                             width: size.width,
-                            avatarText: "A"),
-                        GalleryTile( height: size.height / 5.2,
-                            width: size.width,images: []),
-                        Expanded(
-                          child: adminHomeBody(
-                            height: size.height / 4,
-                            width: size.width / 2.5,
+                            avatarText: "A",
+                              context: context),
+                          SizedBox(height: size.height * 0.02),
+
+                          Center(child:
+                                  // context.read<AppState>().faculty != null
+                                  //         ?
+                                  // facultyHomeBody(context: context)),
+                          //         : context.read<AppState>().student != null
+                          //             ?
+                          studentHomeBody(context: context)),
+                          // : adminHomeBody(context: context)),
+                          Center(
+                            child: GalleryTile(
+                              height: size.height / 5.2,
+                              width: size.width * 0.9,
+                              images: const [
+                                "assets/demo_images/1.jpeg",
+                                "assets/demo_images/11.jpeg",
+                                "assets/demo_images/2.jpeg",
+                                "assets/demo_images/3.jpeg"
+                              ],
+                            ),
                           ),
-                        )
-                      ],
-                    )
-                  : LoadingView(
-                      height: size.height * 0.3, width: size.width / 2.5),
-            ),
-          );
-        });
+                          SizedBox(height: size.height * 0.05),
+                        ],
+                      ),
+                    ),
+                )
+                : LoadingView(
+                    height: size.height * 0.3, width: size.width / 2.5),
+          ),
+        );
+      },
+    );
   }
 }
 
 Widget homeScreeHead(
     {required double height,
     required double width,
-    required String avatarText}) {
+    required String avatarText,
+    required BuildContext context}) {
   return Container(
     height: height,
     decoration: const BoxDecoration(
@@ -74,37 +100,50 @@ Widget homeScreeHead(
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    "Anandu Rs",
-                    style: TextStyle(
+                  Text('Aparna',
+                    // context.read<AppState>().faculty != null
+                    //     ? context.read<AppState>().faculty!.firstName
+                    //     : context.read<AppState>().student != null
+                    //         ? context.read<AppState>().student!.firstName
+                    //         : "Admin",
+                    style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: AppPalette.primaryTextColor),
                   ),
-                  Text(
-                    "Admin",
-                    style: TextStyle(
+                  Text('MCA',
+                    // context.read<AppState>().faculty != null
+                    //     ? '${context.read<AppState>().faculty!.course} Faculty'
+                    //     : context.read<AppState>().student != null
+                    //     ? context.read<AppState>().student!.course
+                    //     : "Admin",
+                    style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
                         color: AppPalette.primaryTextColor),
                   ),
                 ],
               ),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: width * 0.4, bottom: height * 0.15),
-                child: CircleAvatar(
-                  backgroundColor: AppPalette.offWhite,
-                  child: Text(
-                    avatarText,
-                    style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: AppPalette.primaryTextColor),
+              GestureDetector(
+                onTap: () {
+                  context.goNamed(RouteConstants.profileView);
+                },
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(left: width * 0.4, bottom: height * 0.15),
+                  child: CircleAvatar(
+                    backgroundColor: AppPalette.offWhite,
+                    child: Text(
+                      avatarText,
+                      style: const TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: AppPalette.primaryTextColor),
+                    ),
                   ),
                 ),
               ),
@@ -116,19 +155,233 @@ Widget homeScreeHead(
   );
 }
 
-Widget adminHomeBody({required double height, required double width}) {
-  List<String> iconNames = ["Teachers", "Students", "Fee", "Calender"];
-  return GridView.builder(
-    itemCount: 4,
-    gridDelegate:
-        const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-    itemBuilder: (context, index) {
-      return CustomIconTile(
-          height: height,
-          width: width,
-          onTap: () {},
-          iconImage: "",
-          optionName: iconNames[index]);
+Widget adminHomeBody({required BuildContext context}) {
+  Size size =MediaQuery.of(context).size;
+ var tileHeight=size.height * 0.2;
+var tileWidth=size.width / 4;
+  return Wrap(
+    spacing: 5, // Space between items horizontally
+    runSpacing: 10.0, // Space between items vertically
+    alignment: WrapAlignment.center, // Center align items
+    children: [
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.teachersView);
+        },
+        iconImage: "assets/icons/teacher.png",
+        optionName: "Teachers",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.studentsView);
+        },
+        iconImage: "assets/icons/students.png",
+        optionName: "Students",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.calenderView);
+        },
+        iconImage: "assets/icons/calender.png",
+        optionName: "Calender",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.announcements);
+        },
+        iconImage: "assets/icons/announcement.png",
+        optionName: "Announcements",
+      ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.contactDetails);
+        },
+        iconImage: "assets/icons/attendance.png",
+        optionName: "Contact details",
+      ),
+    ],
+  );
+}
+
+Widget facultyHomeBody({required BuildContext context}) {
+  Size size = MediaQuery.of(context).size;
+  var tileHeight = size.height * 0.15;
+  var tileWidth = size.width / 4;
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      return Wrap(
+        spacing: 5,
+        runSpacing: 10.0,
+        alignment: WrapAlignment.start, // Ensures elements align properly
+        children: [
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.internalMarks);
+            },
+            iconImage: "assets/icons/mark.png",
+            optionName: "Internal Mark",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.studentsView);
+            },
+            iconImage: "assets/icons/students.png",
+            optionName: "Students",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.calenderView);
+            },
+            iconImage: "assets/icons/calender.png",
+            optionName: "Calender",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.announcements);
+            },
+            iconImage: "assets/icons/announcement.png",
+            optionName: "Announcements",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.contactDetails);
+            },
+            iconImage: "assets/icons/contact-mail.png",
+            optionName: "Contact details",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.attendance);
+            },
+            iconImage: "assets/icons/attendance.png",
+            optionName: "Attendance",
+          ),
+          // Last row with left alignment
+          Row(
+            mainAxisSize: MainAxisSize.min, // Prevents extra space
+            children: [
+              CustomIconTile(
+                height: tileHeight,
+                width: tileWidth,
+                onTap: () {
+                  context.goNamed(RouteConstants.leaveRequest);
+                },
+                iconImage: "assets/icons/request_.png",
+                optionName: "Request",
+              ),
+            ],
+          ),
+        ],
+      );
     },
   );
 }
+Widget studentHomeBody({required BuildContext context}) {
+  Size size = MediaQuery.of(context).size;
+  var tileHeight = size.height * 0.15;
+  var tileWidth = size.width / 4;
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      return Wrap(
+        spacing: 5,
+        runSpacing: 10.0,
+        alignment: WrapAlignment.start, // Ensures elements align properly
+        children: [
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.studentInternalMark);
+            },
+            iconImage: "assets/icons/mark.png",
+            optionName: "Internal Mark",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.calenderView);
+            },
+            iconImage: "assets/icons/calender.png",
+            optionName: "Calender",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.announcements);
+            },
+            iconImage: "assets/icons/announcement.png",
+            optionName: "Announcements",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.contactDetails);
+            },
+            iconImage: "assets/icons/contact-mail.png",
+            optionName: "Contact details",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.studentAttendance);
+            },
+            iconImage: "assets/icons/attendance.png",
+            optionName: "Attendance",
+          ),
+          CustomIconTile(
+            height: tileHeight,
+            width: tileWidth,
+            onTap: () {
+              context.goNamed(RouteConstants.viewFee);
+            },
+            iconImage: "assets/icons/request_.png",
+            optionName: "View Fee",
+          ),
+          // Last row with left alignment
+          Row(
+            mainAxisSize: MainAxisSize.min, // Prevents extra space
+            children: [
+              CustomIconTile(
+                height: tileHeight,
+                width: tileWidth,
+                onTap: () {
+                  context.goNamed(RouteConstants.sendRequest);
+                },
+                iconImage: "assets/icons/request_.png",
+                optionName: "Request",
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
+}
+
+

@@ -36,7 +36,12 @@ class SignupViewModel extends BaseViewModel {
       }
       setViewState(state: ViewState.ideal);
     } catch (e) {
-      print(e);
+      showException(
+          error: e,
+          retryMethod: () {
+            signupUser(
+                isStudent: isStudent, password: password, appState: appState);
+          });
     }
   }
 }

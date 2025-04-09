@@ -50,8 +50,9 @@ class _HomeViewState extends State<HomeView> {
                                   // facultyHomeBody(context: context)),
                           //         : context.read<AppState>().student != null
                           //             ?
-                          studentHomeBody(context: context)),
-                          // : adminHomeBody(context: context)),
+                          // studentHomeBody(context: context)),
+                          // :
+                          adminHomeBody(context: context)),
                           Center(
                             child: GalleryTile(
                               height: size.height / 5.2,
@@ -209,6 +210,16 @@ var tileWidth=size.width / 4;
         iconImage: "assets/icons/attendance.png",
         optionName: "Contact details",
       ),
+      CustomIconTile(
+        height: tileHeight,
+        width: tileWidth,
+        onTap: () {
+          context.goNamed(RouteConstants.feeDetails);
+        },
+        iconImage: "assets/icons/money.png",
+        optionName: "Fee",
+      ),
+
     ],
   );
 }

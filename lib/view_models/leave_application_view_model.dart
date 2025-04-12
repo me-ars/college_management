@@ -50,8 +50,11 @@ if(_leaveRequest.isNotEmpty){
           });
     }
   }
-  Future<void> addRequest({required LeaveRequest request}) async {
+
+  Future<void> addRequest(
+      {required LeaveRequest request, required Student student}) async {
     try {
+      setViewState(state: ViewState.busy);
       DateTime now = DateTime.now();
       DateTime fromDate = DateTime.parse(request.fromDate);
       DateTime toDate = DateTime.parse(request.toDate);
@@ -97,11 +100,12 @@ if(_leaveRequest.isNotEmpty){
           data: {"leaveRequests": leaveRequests},
         );
       }
+      onModelReady(student: student);
     } catch (e) {
       print("Error: $e");
       showException(error: e, retryMethod: () {
-        addRequest(request: request);
-      });
+            addRequest(request: request, student: student);
+          });
     }
   }
 

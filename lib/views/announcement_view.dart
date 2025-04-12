@@ -125,7 +125,7 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                   ),
                 ),
               ],
-            ):model.viewState==ViewState.empty?Center(child: Text('No announcement'),):LoadingView(
+            ):model.viewState==ViewState.empty?const Center(child: Text('No announcement'),):LoadingView(
                 height: size.height * 0.3, width: size.width / 2.5),
           ));
         });

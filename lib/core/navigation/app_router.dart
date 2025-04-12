@@ -119,23 +119,26 @@ class AppRouter {
   AppRouter({required AppState appState}) : _appState = appState;
 
   late final appRouter = GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/',
 
-    // redirect: (context, state) {
-    //   // If the user is not logged in and not already on the login or signup page, redirect to login
-    //   if (_appState.faculty == null && _appState.student == null && !_appState.admin) {
-    //     if (state.path != '/' && state.path != '/signup') {
-    //       return '/';
-    //     }
-    //   }
-    //   // If the user is logged in and tries to access the login or signup page, redirect to home
-    //   else if ((_appState.faculty != null || _appState.student != null || _appState.admin) &&
-    //       (state.path == '/' || state.path == '/signup')) {
-    //     return '/home';
-    //   }
-    //   // Otherwise, allow the navigation to proceed
-    //   return null;
-    // },
+    redirect: (context, state) {
+      // If the user is not logged in and not already on the login or signup page, redirect to login
+      if (_appState.faculty == null && _appState.student == null && !_appState.admin) {
+        if (state.path != '/' && state.path != '/signup') {
+          return '/';
+        }
+      }
+      // If the user is logged in and tries to access the login or signup page, redirect to home
+      else if
+      // (
+      (_appState.faculty != null || _appState.student != null || _appState.admin)
+      // &&
+          // (state.path == '/' || state.path == '/signup')) {
+        return '/home';
+      // }
+      // Otherwise, allow the navigation to proceed
+      return null;
+    },
 
     routes: <RouteBase>[
       GoRoute(

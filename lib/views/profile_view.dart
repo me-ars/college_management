@@ -41,8 +41,54 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                  
                   backgroundColor: AppPalette.violetDark,
-                ),
-                body: model.viewState == ViewState.ideal
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: const Text(
+                                    "Do you want to logout?",
+                                    style: TextStyle(
+                                        color: AppPalette.primaryTextColor),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                            color: AppPalette.primaryTextColor),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // Handle logout logic here
+                                        Navigator.of(context)
+                                            .pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        "Logout",
+                                        style: TextStyle(
+                                            color: AppPalette.primaryTextColor),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.logout,
+                            color: AppPalette.offWhite,
+                          ))
+                    ],
+                  ),
+                  body: model.viewState == ViewState.ideal
                     ? faculty!=null?facultyView(faculty):student!=null?studentView(student):SizedBox()
                     : LoadingView(height: size.height / 4, width: size.width * 0.8)
               ));

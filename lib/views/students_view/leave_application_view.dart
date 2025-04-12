@@ -25,6 +25,8 @@ class LeaveApplicationView extends StatefulWidget {
 class _LeaveApplicationViewState extends State<LeaveApplicationView> {
   @override
   Widget build(BuildContext context) {
+    //todo remove this static student value=
+    //  Student student =context.read<AppState>().student!;
     Student student = Student(
         sem: '2',
         firstName: 'firstName',
@@ -59,7 +61,8 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                _showLeaveRequestDialog(context, model);
+                _showLeaveRequestDialog(
+                    context: context, model: model, student: student);
               },
               child: Icon(Icons.add), // Plus icon
             ),
@@ -103,7 +106,10 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
     );
   }
 
-  void _showLeaveRequestDialog(BuildContext context, LeaveApplicationViewModel model) {
+  void _showLeaveRequestDialog(
+      {required BuildContext context,
+      required LeaveApplicationViewModel model,
+      required Student student}) {
     DateTime? fromDate;
     DateTime? toDate;
     TextEditingController reasonController = TextEditingController();
@@ -231,7 +237,8 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
                               verified: false,
                             );
 
-                            model.addRequest(request: newRequest);
+                            model.addRequest(
+                                request: newRequest, student: student);
                             Navigator.pop(context);
                           },
                           width: size.width * 0.35,

@@ -34,7 +34,8 @@ Future<void> initDependencies() async {
           () => RequestViewModel(firebaseService: locator()));
   locator.registerFactory<AttendanceViewModel>(
           () => AttendanceViewModel(firebaseService: locator()));
-  locator.registerFactory<ProfileViewModel>(() => ProfileViewModel());
+  locator.registerFactory<ProfileViewModel>(
+      () => ProfileViewModel(authService: locator()));
   //student view
   locator.registerFactory<LeaveApplicationViewModel>(
       () => LeaveApplicationViewModel(firebaseService: locator()));

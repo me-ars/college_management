@@ -35,4 +35,15 @@ class AppState extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void logoutUser({Faculty? faculty, Student? student}) {
+    if (faculty != null) {
+      _faculty = null;
+    } else {
+      _student = null;
+    }
+    _admin = false;
+notifyListeners();
+    notifyListeners();
+  }
 }

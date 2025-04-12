@@ -29,6 +29,7 @@ class AnnouncementViewModel extends BaseViewModel {
 
   Future<void> _fetchAnnouncements() async {
     try {
+      setViewState(state: ViewState.busy);
       var announcements = await _firebaseService.getData(
           collectionName: FirebaseCollectionConstants.announcements);
 
@@ -37,6 +38,7 @@ class AnnouncementViewModel extends BaseViewModel {
             .map<AnnouncementModel>((data) => AnnouncementModel.fromMap(data))
             .toList();
       }
+      setViewState(state: ViewState.ideal);
 
       // TODO: Add filtering for users according to their course.
     } catch (e) {

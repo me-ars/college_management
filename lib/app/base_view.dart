@@ -106,21 +106,21 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false, // We handle back press manually
-      onPopInvoked: (didPop) {
-        if (didPop) return; // Prevent double pop
-
-        if (_isDialogOpen) {
-          Navigator.of(context).pop(); // Close dialog
-        } else {
-          // Check if it's the Home or Login screen
-          bool isHomeOrLogin = ModalRoute.of(context)?.settings.name == "/home" ||
-              ModalRoute.of(context)?.settings.name == "/login";
-
-          if (!isHomeOrLogin) {
-            Navigator.of(context).pop(); // Pop the current screen
-          }
-        }
-      },
+      // onPopInvoked: (didPop) {
+      //   if (didPop) return; // Prevent double pop
+      //
+      //   if (_isDialogOpen) {
+      //     Navigator.of(context).pop(); // Close dialog
+      //   } else {
+      //     // Check if it's the Home or Login screen
+      //     bool isHomeOrLogin = ModalRoute.of(context)?.settings.name == "/home" ||
+      //         ModalRoute.of(context)?.settings.name == "/login";
+      //
+      //     if (!isHomeOrLogin) {
+      //       Navigator.of(context).pop(); // Pop the current screen
+      //     }
+      //   }
+      // },
       child: ChangeNotifierProvider<T>(
         create: (BuildContext context) => model,
         child: Consumer<T>(builder: widget.builder),

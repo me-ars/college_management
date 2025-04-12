@@ -31,7 +31,8 @@ class _LoginViewState extends State<LoginView> {
         },
         refresh: (LoginViewModel model) {},
         builder: (context, model, child) {
-          return SafeArea(
+          return PopScope(
+            canPop: false,
             child: Scaffold(
               resizeToAvoidBottomInset: true,
               body: SingleChildScrollView(
@@ -98,7 +99,7 @@ class _LoginViewState extends State<LoginView> {
                           height: size.height * 0.06),
                       SizedBox(height: size.height * 0.01),
                       GestureDetector(onTap: (){
-                        GoRouter.of(context).goNamed(RouteConstants.signUp);
+                        GoRouter.of(context).pushReplacementNamed(RouteConstants.signUp);
                       },
                         child: const Text(
                           "Don't have an account? Signup",

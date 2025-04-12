@@ -5,8 +5,10 @@ import 'package:college_management/views/helper_classes/custom_snackbar.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:college_management/views/widgets/custom_drop_down.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_pallete.dart';
+import '../../core/constants/route_constants.dart';
 import '../../core/models/faculty.dart';
 import '../../core/models/student.dart';
 import '../../utils/validators.dart';
@@ -72,193 +74,202 @@ class _SignupViewState extends State<SignupView> {
         _coNameController.clear();
       },
       builder: (context, model, child) {
-        return SafeArea(
-            child: Scaffold(
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                      color: AppPalette.violetLt,
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(35),
-                          bottomRight: Radius.circular(35))),
-                  height: size.height / 6.5,
-                ),
-                formNumber == 1
-                    ? basicDetailForm(
-                        selectedRole: _role,
-                        selectedCourse: _selectedCourse,
-                        onRoleSelection: (val) {
-                          if (val == "Faculty") {
-                            setState(() {
-                              _role = val;
-                              isStudentRegistration = false;
-                            });
-                          }
-                        },
-                        size: size,
-                        firstNameController: _firstNameController,
-                        lastNameController: _lastNameController,
-                        admnNumberController: _idController,
-                        emailController: _emailController,
-                        phoneController: _phoneController,
-                        onCourseSelection: (val) {
-                          _selectedCourse = val;
-                        },
-                        onNext: () {
-                          if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
-                            _role,
-                            _selectedCourse,
-                            _firstNameController.text,
-                            _lastNameController.text,
-                            _idController.text,
-                            _emailController.text,
-                            _phoneController.text
-                          ])) {
-                            if (ValidationUtils.isValidName(
-                                    _firstNameController.text) ||
-                                ValidationUtils.isValidName(
-                                    _lastNameController.text)) {
-                              CustomSnackBar.show(context, "Invalid Name");
-                              return;
-                            }
-                            if (!ValidationUtils.isValidEmail(
-                                _emailController.text)) {
-                              CustomSnackBar.show(context, "Invalid email");
-                              return;
-                            }
+        return PopScope(
+          canPop: false,
+          child: SafeArea(
+              child: Scaffold(
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                        color: AppPalette.violetLt,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(35),
+                            bottomRight: Radius.circular(35))),
+                    height: size.height / 6.5,
+                    child: Center(
+                      child: GestureDetector(onTap: (){
+                        GoRouter.of(context).pushReplacementNamed(RouteConstants.login);
 
-                            setState(() {
-                              formNumber++;
-                            });
-                          }{
-                            CustomSnackBar.show(context, "Fields can't be empty");
-                          }
-                        })
-                    : formNumber == 2
-                        ? _personalDetailForm(
-                            isStudent: isStudentRegistration,
-                            size: size,
-                            coController: _coNameController,
-                            coPhoneController: _coPhoneController,
-                            dobController: _dobController,
-                            genderValueController: _genderController,
-                            admnDateController: _joiningDateController,
-                            batchController: _batchNameController,
-                            onNext: () {
-                              if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
-                                _coNameController.text,
-                                _coPhoneController.text,
-                                _dobController.text,
-                                _genderController.text,
-                                _joiningDateController.text,
-                                isStudentRegistration
-                                    ? _batchNameController.text
-                                    : "Faculty"
-                              ])) {
+                      },child: const Text("Login")),
+                    ),
+                  ),
+                  formNumber == 1
+                      ? basicDetailForm(
+                          selectedRole: _role,
+                          selectedCourse: _selectedCourse,
+                          onRoleSelection: (val) {
+                            if (val == "Faculty") {
+                              setState(() {
+                                _role = val;
+                                isStudentRegistration = false;
+                              });
+                            }
+                          },
+                          size: size,
+                          firstNameController: _firstNameController,
+                          lastNameController: _lastNameController,
+                          admnNumberController: _idController,
+                          emailController: _emailController,
+                          phoneController: _phoneController,
+                          onCourseSelection: (val) {
+                            _selectedCourse = val;
+                          },
+                          onNext: () {
+                            if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
+                              _role,
+                              _selectedCourse,
+                              _firstNameController.text,
+                              _lastNameController.text,
+                              _idController.text,
+                              _emailController.text,
+                              _phoneController.text
+                            ])) {
+                              if (ValidationUtils.isValidName(
+                                      _firstNameController.text) ||
+                                  ValidationUtils.isValidName(
+                                      _lastNameController.text)) {
+                                CustomSnackBar.show(context, "Invalid Name");
+                                return;
+                              }
+                              if (!ValidationUtils.isValidEmail(
+                                  _emailController.text)) {
+                                CustomSnackBar.show(context, "Invalid email");
+                                return;
+                              }
+
+                              setState(() {
+                                formNumber++;
+                              });
+                            }{
+                              CustomSnackBar.show(context, "Fields can't be empty");
+                            }
+                          })
+                      : formNumber == 2
+                          ? _personalDetailForm(
+                              isStudent: isStudentRegistration,
+                              size: size,
+                              coController: _coNameController,
+                              coPhoneController: _coPhoneController,
+                              dobController: _dobController,
+                              genderValueController: _genderController,
+                              admnDateController: _joiningDateController,
+                              batchController: _batchNameController,
+                              onNext: () {
+                                if (!ValidationUtils.isAllFieldsEmpty(fieldValues: [
+                                  _coNameController.text,
+                                  _coPhoneController.text,
+                                  _dobController.text,
+                                  _genderController.text,
+                                  _joiningDateController.text,
+                                  isStudentRegistration
+                                      ? _batchNameController.text
+                                      : "Faculty"
+                                ])) {
+                                  setState(() {
+                                    formNumber++;
+                                  });
+                                }
+                                else{
+                                  CustomSnackBar.show(context, "Fields can't be empty");
+                                }
+                              },
+                              onPrev: () {
                                 setState(() {
-                                  formNumber++;
+                                  formNumber--;
                                 });
-                              }
-                              else{
-                                CustomSnackBar.show(context, "Fields can't be empty");
-                              }
-                            },
-                            onPrev: () {
-                              setState(() {
-                                formNumber--;
-                              });
-                            })
-                        : otherDetailForm2(
-                            passwordController: _passwordController,
-                            confirmPasswordController:
-                                _confirmPasswordController,
-                            isStudent: isStudentRegistration,
-                            size: size,
-                            addressController: _addressController,
-                            bachelorsController: _bachelorsController,
-                            plusTwoController: _plusTwoController,
-                            sslcController: _sslcController,
-                            onSignup: () {
-                              if (_passwordController.text ==
-                                  _confirmPasswordController.text)
-                              // Create a Faculty or Student object based on the role
-                              {
+                              })
+                          : otherDetailForm2(
+                              passwordController: _passwordController,
+                              confirmPasswordController:
+                                  _confirmPasswordController,
+                              isStudent: isStudentRegistration,
+                              size: size,
+                              addressController: _addressController,
+                              bachelorsController: _bachelorsController,
+                              plusTwoController: _plusTwoController,
+                              sslcController: _sslcController,
+                              onSignup: () {
+                                if (_passwordController.text ==
+                                    _confirmPasswordController.text)
+                                // Create a Faculty or Student object based on the role
+                                {
 
-                                password = _confirmPasswordController.text;
-                                if(password.length<6){
-                                  CustomSnackBar.show(context, "Password must contain 6 characters");
-                                  return;
+                                  password = _confirmPasswordController.text;
+                                  if(password.length<6){
+                                    CustomSnackBar.show(context, "Password must contain 6 characters");
+                                    return;
+                                  }
+                                  if (isStudentRegistration) {
+                                    // Create a Student object
+                                    Student student = Student(
+                                      sem: "1",
+                                      firstName: _firstNameController.text,
+                                      lastName: _lastNameController.text,
+                                      studentId: _idController.text,
+                                      course: _selectedCourse,
+                                      email: _emailController.text,
+                                      phone: _phoneController.text,
+                                      joiningDate: _joiningDateController.text,
+                                      batch: _batchNameController.text,
+                                      dob: _dobController.text,
+                                      gender: _genderController.text,
+                                      guardianName: _coNameController.text,
+                                      guardianPhone: _coPhoneController.text,
+                                      address: _addressController.text,
+                                      sslc: _sslcController.text,
+                                      plusTwo: _plusTwoController.text,
+                                      bachelors: _bachelorsController.text,
+                                    );
+
+                                    // Call signupUser for a student
+                                    model.signupUser(
+                                      password: password,
+                                      appState: context.read<AppState>(),
+                                      isStudent: true,
+                                      student: student,
+                                      faculty: null, // Pass null for faculty
+                                    );
+                                  } else {
+                                    // Create a Faculty object
+                                    Faculty faculty = Faculty(
+                                      firstName: _firstNameController.text,
+                                      lastName: _lastNameController.text,
+                                      employeeId: _idController.text,
+                                      email: _emailController.text,
+                                      phone: _phoneController.text,
+                                      joiningDate: _joiningDateController.text,
+                                      subject: _batchNameController.text,
+                                      dob: _dobController.text,
+                                      gender: _genderController.text,
+                                      coName: _coNameController.text,
+                                      coPhoneNumber: _coPhoneController.text,
+                                      address: _addressController.text,
+                                      course: _selectedCourse,
+                                    );
+
+                                    // Call signupUser for a faculty
+                                    model.signupUser(
+                                      password: password,
+                                      appState: context.read<AppState>(),
+                                      isStudent: false,
+                                      faculty: faculty,
+                                      student: null, // Pass null for student
+                                    );
+                                  }
                                 }
-                                if (isStudentRegistration) {
-                                  // Create a Student object
-                                  Student student = Student(
-                                    sem: "1",
-                                    firstName: _firstNameController.text,
-                                    lastName: _lastNameController.text,
-                                    studentId: _idController.text,
-                                    course: _selectedCourse,
-                                    email: _emailController.text,
-                                    phone: _phoneController.text,
-                                    joiningDate: _joiningDateController.text,
-                                    batch: _batchNameController.text,
-                                    dob: _dobController.text,
-                                    gender: _genderController.text,
-                                    guardianName: _coNameController.text,
-                                    guardianPhone: _coPhoneController.text,
-                                    address: _addressController.text,
-                                    sslc: _sslcController.text,
-                                    plusTwo: _plusTwoController.text,
-                                    bachelors: _bachelorsController.text,
-                                  );
-
-                                  // Call signupUser for a student
-                                  model.signupUser(
-                                    password: password,
-                                    appState: context.read<AppState>(),
-                                    isStudent: true,
-                                    student: student,
-                                    faculty: null, // Pass null for faculty
-                                  );
-                                } else {
-                                  // Create a Faculty object
-                                  Faculty faculty = Faculty(
-                                    firstName: _firstNameController.text,
-                                    lastName: _lastNameController.text,
-                                    employeeId: _idController.text,
-                                    email: _emailController.text,
-                                    phone: _phoneController.text,
-                                    joiningDate: _joiningDateController.text,
-                                    subject: _batchNameController.text,
-                                    dob: _dobController.text,
-                                    gender: _genderController.text,
-                                    coName: _coNameController.text,
-                                    coPhoneNumber: _coPhoneController.text,
-                                    address: _addressController.text,
-                                    course: _selectedCourse,
-                                  );
-
-                                  // Call signupUser for a faculty
-                                  model.signupUser(
-                                    password: password,
-                                    appState: context.read<AppState>(),
-                                    isStudent: false,
-                                    faculty: faculty,
-                                    student: null, // Pass null for student
-                                  );
-                                }
-                              }
-                            },
-                            onPrev: () {
-                              setState(() {
-                                formNumber--;
-                              });
-                            }),
-              ],
+                              },
+                              onPrev: () {
+                                setState(() {
+                                  formNumber--;
+                                });
+                              }),
+                ],
+              ),
             ),
-          ),
-        ));
+          )),
+        );
       },
     );
   }

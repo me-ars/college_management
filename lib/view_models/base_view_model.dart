@@ -38,7 +38,6 @@ class BaseViewModel extends ChangeNotifier {
   }
 
   showException({required dynamic error, required Function retryMethod}) {
-    print(error);
     if (error! is BaseException) {
       _exception = error;
 

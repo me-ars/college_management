@@ -315,7 +315,7 @@ class _SignupViewState extends State<SignupView> {
           labelText: "Select course",
           items: const ["MCA", "MBA"],
           onChanged: (val) {
-            onRoleSelection(val);
+            onCourseSelection(val);
           },
           width: size.width * 0.85,
           height: size.height * 0.08,

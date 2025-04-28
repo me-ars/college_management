@@ -1,3 +1,4 @@
+import 'package:college_management/core/models/admin_model.dart';
 import 'package:college_management/core/models/faculty.dart';
 import 'package:college_management/core/models/student.dart';
 import 'package:college_management/core/services/auth_services/auth_service.dart';
@@ -19,11 +20,15 @@ void main() async {
 
   Faculty? faculty;//value
   Student? student;
+  AdminModel? admin;
   bool isAdmin = false;
 
   if (userData != null) {
     if (userData.containsKey("employeeId")) {
       faculty = Faculty.fromMap(userData); // Faculty user
+    } else if (userData.containsKey("adminId")) {
+      isAdmin = true;
+      admin = AdminModel.fromMap(userData);
     } else {
       student = Student.fromMap(userData); // Student user
     }
@@ -35,7 +40,7 @@ void main() async {
     }
   }
 
-  runApp(MesAimat(isAdmin: isAdmin, student: student, faculty: faculty));
+  runApp(MesAimat(isAdmin: isAdmin, student: student, faculty: faculty,adminModel: admin,));
 }
 
 

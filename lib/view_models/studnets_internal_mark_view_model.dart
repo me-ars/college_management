@@ -18,7 +18,7 @@ class StudentsInternalMarkViewModel extends BaseViewModel {
       setViewState(state: ViewState.busy);
 
       var data = await _firebaseService.getData(
-        collectionName: course == 'mca'
+        collectionName: course.toLowerCase() == 'mca'
             ? FirebaseCollectionConstants.mcaInternalMark
             : FirebaseCollectionConstants.mbaLeaveApplications,
         documentId: studentId,

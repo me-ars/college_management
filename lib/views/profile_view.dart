@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../app/base_view.dart';
 import '../core/constants/app_pallete.dart';
 import '../core/enums/view_state.dart';
+import '../core/models/admin_model.dart';
 import '../core/models/faculty.dart';
 import '../core/models/student.dart';
 import '../view_models/shared_view_models/profile_view_model.dart';
@@ -23,7 +24,7 @@ class _ProfileViewState extends State<ProfileView> {
   Widget build(BuildContext context) {
     Faculty? faculty=context.read<AppState>().faculty;
     Student? student=context.read<AppState>().student;
-    bool? isAdmin=context.read<AppState>().admin;
+    AdminModel? admin = context.read<AppState>().admin;
 
     Size size = MediaQuery.of(context).size;
     return BaseView<ProfileViewModel>(
@@ -39,16 +40,78 @@ class _ProfileViewState extends State<ProfileView> {
                     "Profile",
                     style: TextStyle(color: AppPalette.offWhite),
                   ),
-                 
                   backgroundColor: AppPalette.violetDark,
-                ),
-                body: model.viewState == ViewState.ideal
-                    ? faculty!=null?facultyView(faculty):student!=null?studentView(student):SizedBox()
-                    : LoadingView(height: size.height / 4, width: size.width * 0.8)
-              ));
+                    actions: [
+                      IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: const Text(
+                                    "Do you want to logout?",
+                                    style: TextStyle(
+                                        color: AppPalette.primaryTextColor),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close dialog
+                                      },
+                                      child: const Text(
+                                        "Cancel",
+                                        style: TextStyle(
+                                            color: AppPalette.primaryTextColor),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        model.logoutUser(
+                                            appState: context.read<AppState>());
+
+                                        Navigator.of(context).pop();
+                                        // context.pushReplacementNamed(RouteConstants.login);
+                                      },
+                                      child: const Text(
+                                        "Logout",
+                                        style: TextStyle(
+                                            color: AppPalette.primaryTextColor),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.logout,
+                            color: AppPalette.offWhite,
+                          ))
+                    ],
+                  ),
+                  body: model.viewState == ViewState.ideal
+                      ? faculty != null
+                          ? facultyView(faculty)
+                          : student != null
+                              ? studentView(student)
+                              :
+                  adminView(admin!)
+                      : LoadingView(
+                          height: size.height / 4, width: size.width * 0.8)));
         });
   }
 
+}
+
+Widget adminView(AdminModel admin) {
+  return _buildProfileCard(
+    name: "Admin",
+    details: {
+      "Admin ID": admin.adminId,
+      "Email": admin.email,
+    },
+  );
 }
 
 Widget facultyView(Faculty faculty) {

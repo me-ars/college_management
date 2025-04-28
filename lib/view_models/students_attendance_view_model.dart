@@ -25,8 +25,7 @@ class StudentsAttendanceViewModel extends BaseViewModel {
       }else {
         setViewState(state: ViewState.ideal);
       }
-    } catch (e,s) {
-      print(s);
+    } catch (e) {
       showException(
         error: e,
         retryMethod: () {

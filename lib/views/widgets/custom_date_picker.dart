@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/constants/app_pallete.dart';
-
 class CustomDatePicker extends StatefulWidget {
   final double width;
   final double height;
@@ -23,6 +22,17 @@ class CustomDatePicker extends StatefulWidget {
 
 class _CustomDatePickerState extends State<CustomDatePicker> {
   @override
+  void initState() {
+    super.initState();
+
+    // Set the initial date if the controller is empty
+    if (widget.dateController.text.isEmpty) {
+      final today = DateTime.now();
+      widget.dateController.text = DateFormat('dd-MM-yyyy').format(today);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
@@ -31,15 +41,17 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
         width: widget.width,
         height: widget.height,
         decoration: BoxDecoration(
-            boxShadow: const [
-              BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 2),
-                  blurRadius: 10,
-                  spreadRadius: 0.2)
-            ],
-            borderRadius: BorderRadius.circular(15),
-            color: AppPalette.offWhite),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              offset: Offset(0, 2),
+              blurRadius: 10,
+              spreadRadius: 0.2,
+            )
+          ],
+          borderRadius: BorderRadius.circular(15),
+          color: AppPalette.offWhite,
+        ),
         child: Center(
           child: TextField(
             style: const TextStyle(color: AppPalette.primaryTextColor),
@@ -61,7 +73,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
                   );
                   if (pickedDate != null) {
                     String formattedDate =
-                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                    DateFormat('dd-MM-yyyy').format(pickedDate);
                     widget.dateController.text = formattedDate;
                   }
                 },

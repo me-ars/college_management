@@ -1,12 +1,11 @@
 import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/views/helper_classes/error_view.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../init_dependencies.dart';
 import '../utils/string_utils.dart';
 import '../view_models/base_view_model.dart';
-
+import 'package:provider/provider.dart';
 class BaseView<T extends BaseViewModel> extends StatefulWidget {
   final Widget Function(BuildContext context, T model, Widget? child) builder;
   final Function(T model)? onModelReady;
@@ -77,6 +76,7 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   }
 
   _showErrorWarning() {
+
     if (_isDialogOpen) return; // Prevent multiple dialogs
     _isDialogOpen = true;
 
@@ -105,22 +105,7 @@ class BaseViewState<T extends BaseViewModel> extends State<BaseView<T>> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // We handle back press manually
-      onPopInvoked: (didPop) {
-        if (didPop) return; // Prevent double pop
-
-        if (_isDialogOpen) {
-          Navigator.of(context).pop(); // Close dialog
-        } else {
-          // Check if it's the Home or Login screen
-          bool isHomeOrLogin = ModalRoute.of(context)?.settings.name == "/home" ||
-              ModalRoute.of(context)?.settings.name == "/login";
-
-          if (!isHomeOrLogin) {
-            Navigator.of(context).pop(); // Pop the current screen
-          }
-        }
-      },
+      canPop: true, // We handle back press manually
       child: ChangeNotifierProvider<T>(
         create: (BuildContext context) => model,
         child: Consumer<T>(builder: widget.builder),

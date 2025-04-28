@@ -42,7 +42,14 @@ class _AnnouncementViewState extends State<AnnouncementView> {
     Size size = MediaQuery.of(context).size;
     return BaseView<AnnouncementViewModel>(
         onModelReady: (AnnouncementViewModel model) {
-          model.onModelReady();
+          String course = context.read<AppState>().isAdmin
+              ? "admin"
+              : context.read<AppState>().student != null
+                  ? context.read<AppState>().student!.course
+                  : context.read<AppState>().faculty!.course;
+          model.onModelReady(course: course,isAdminOrHod:context.read<AppState>().isAdmin ||
+              (context.read<AppState>().faculty != null &&
+                  context.read<AppState>().faculty?.isHOD == true));
         },
         onDispose:(AnnouncementViewModel model) {
           _announcementController.clear();
@@ -70,7 +77,7 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                               borderRadius: BorderRadius.circular(10)),
                           child: ListTile(
                             trailing: Visibility(
-                              visible: context.read<AppState>().admin &&
+                              visible: context.read<AppState>().isAdmin &&
                                   context.read<AppState>().faculty != null,
                               child: IconButton(
                                 onPressed: () {
@@ -93,40 +100,59 @@ class _AnnouncementViewState extends State<AnnouncementView> {
                   ),
                 ),
                 Visibility(
-                  visible: context.read<AppState>().admin ||
+                  visible: context.read<AppState>().isAdmin ||
                       (context.read<AppState>().faculty != null &&
                           context.read<AppState>().faculty?.isHOD == true),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            isPassword: false,
-                            width: size.width * 0.8,
-                            height: size.height * 0.1,
-                            labelText: "Enter the message",
-                            textEditingController: _announcementController,
+                    child: SizedBox(
+                      height: size.height * 0.1,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              isPassword: false,
+                              width: size.width * 0.8,
+                              height: size.height * 0.1,
+                              labelText: "Enter the message",
+                              textEditingController: _announcementController,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        CustomButton(
-                          width: size.width * 0.1,
-                          height: size.height * 0.1,
-                          onPressed: () {
-                            model.sendAnnouncements(
-                                message: _announcementController.text);
-                            _announcementController.clear();
-                          },
-                          label: ">",
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          CustomButton(
+                            width: size.width * 0.1,
+                            height: size.height * 0.1,
+                            onPressed: () {
+                              model.sendAnnouncements(
+                                course: context.read<AppState>().isAdmin
+                                    ? "admin"
+                                    : context.read<AppState>().student != null
+                                    ? context.read<AppState>().student!.course
+                                    : context.read<AppState>().faculty!.course,
+                                message: _announcementController.text,
+                              );
+                              _announcementController.clear();
+                            },
+                            label: ">",
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+
+
               ],
-            ):model.viewState==ViewState.empty?Center(child: Text('No announcement'),):LoadingView(
-                height: size.height * 0.3, width: size.width / 2.5),
+                  )
+                : model.viewState == ViewState.empty
+                    ? const Center(
+                        child: Text(
+                          'No announcement',
+                          style: TextStyle(color: AppPalette.primaryTextColor),
+                        ),
+                      )
+                    : LoadingView(
+                        height: size.height * 0.3, width: size.width / 2.5),
           ));
         });
   }

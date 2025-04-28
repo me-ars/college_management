@@ -1,4 +1,3 @@
-import 'package:college_management/view_models/students_attendance_view_model.dart';
 import 'package:college_management/views/attendence_view.dart';
 import 'package:college_management/views/auth/signup_view.dart';
 import 'package:college_management/views/calender_view.dart';
@@ -21,126 +20,37 @@ import '../../views/request_view.dart';
 import '../constants/route_constants.dart';
 
 import '../../app/app_state.dart';
-//
-// class AppRouter {
-//   final AppState _appState;
-//
-//   AppRouter({required AppState appState}) : _appState = appState;
-//
-//   late final appRouter = GoRouter(
-//     initialLocation: '/home',
-//     redirect: (context, state) {
-//       if (_appState.faculty != null || _appState.student != null || _appState.admin) {
-//         return '/home'; // ✅ If user is logged in or admin, go to home
-//       }
-//       return '/'; // ✅ If no user is logged in, go to login
-//     },
-//
-//     routes: <RouteBase>[
-//       GoRoute(
-//         name: RouteConstants.login,
-//         path: '/',
-//         pageBuilder: (context, state) => const MaterialPage<void>(
-//           key: ValueKey<String>(RouteConstants.login),
-//           child: LoginView(), // Changed from SignupView to LoginView for clarity
-//         ),
-//       ),
-//       GoRoute(
-//         name: RouteConstants.signUp,
-//         path: '/signup',
-//         pageBuilder: (context, state) => const MaterialPage<void>(
-//           key: ValueKey<String>(RouteConstants.signUp),
-//           child: SignupView(),
-//         ),
-//       ),
-//       GoRoute(
-//         name: RouteConstants.home,
-//         path: '/home',
-//         pageBuilder: (context, state) => const MaterialPage<void>(
-//           key: ValueKey<String>(RouteConstants.home),
-//           child: HomeView(),
-//         ),
-//           routes: [
-//             GoRoute(
-//               name: RouteConstants.studentsView,
-//               path: '/studentsView',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.studentsView),
-//                 child: StudentsView(),
-//               ),
-//             ),
-//             GoRoute(
-//               name: RouteConstants.feeDetails,
-//               path: '/feeDetails',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.feeDetails),
-//                 child: FeeView(),
-//               ),
-//             ),
-//             GoRoute(
-//               name: RouteConstants.calenderView,
-//               path: '/calenderView',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.calenderView),
-//                 child: CalenderView(),
-//               ),
-//             ),
-//             GoRoute(
-//               name: RouteConstants.teachersView,
-//               path: '/teachersView',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.teachersView),
-//                 child: FacultyView(),
-//               ),
-//             ),
-//             GoRoute(
-//               name: RouteConstants.announcements,
-//               path: '/announcements',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.feeDetails),
-//                 child: AnnouncementView(),
-//               ),
-//             ),
-//             GoRoute(
-//               name: RouteConstants.contactDetails,
-//               path: '/contactDetails',
-//               pageBuilder: (context, state) => const MaterialPage<void>(
-//                 key: ValueKey<String>(RouteConstants.contactDetails),
-//                 child: ContactUsView(),
-//               ),
-//             ),
-//           ]),
-//     ],
-//   );
-// }
+
 class AppRouter {
   final AppState _appState;
 
   AppRouter({required AppState appState}) : _appState = appState;
 
   late final appRouter = GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/',
+    redirect: (context, state) async{
+      final isLoggedIn = _appState.faculty != null ||
+          _appState.student != null ||
+          _appState.isAdmin;
+      final isAuthRoute =
+          state.uri.path == '/login' || state.uri.path == '/signup';
 
-    // redirect: (context, state) {
-    //   // If the user is not logged in and not already on the login or signup page, redirect to login
-    //   if (_appState.faculty == null && _appState.student == null && !_appState.admin) {
-    //     if (state.path != '/' && state.path != '/signup') {
-    //       return '/';
-    //     }
-    //   }
-    //   // If the user is logged in and tries to access the login or signup page, redirect to home
-    //   else if ((_appState.faculty != null || _appState.student != null || _appState.admin) &&
-    //       (state.path == '/' || state.path == '/signup')) {
-    //     return '/home';
-    //   }
-    //   // Otherwise, allow the navigation to proceed
-    //   return null;
-    // },
+      // Not logged in and trying to access protected route
+      if (!isLoggedIn && !isAuthRoute) {
+        return '/login';
+      }
 
+      // Logged in but trying to access auth route
+      if (isLoggedIn && isAuthRoute) {
+        return '/';
+      }
+
+      return null;
+    },
     routes: <RouteBase>[
       GoRoute(
         name: RouteConstants.login,
-        path: '/',
+        path: '/login',
         pageBuilder: (context, state) => const MaterialPage<void>(
           key: ValueKey<String>(RouteConstants.login),
           child: LoginView(),
@@ -156,7 +66,7 @@ class AppRouter {
       ),
       GoRoute(
         name: RouteConstants.home,
-        path: '/home',
+        path: '/',
         pageBuilder: (context, state) => const MaterialPage<void>(
           key: ValueKey<String>(RouteConstants.home),
           child: HomeView(),
@@ -164,7 +74,7 @@ class AppRouter {
         routes: [
           GoRoute(
             name: RouteConstants.studentsView,
-            path: '/studentsView',
+            path: 'studentsView',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.studentsView),
               child: StudentsView(),
@@ -172,7 +82,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.feeDetails,
-            path: '/feeDetails',
+            path: 'feeDetails',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.feeDetails),
               child: FeeView(),
@@ -180,7 +90,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.calenderView,
-            path: '/calenderView',
+            path: 'calenderView',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.calenderView),
               child: CalenderView(),
@@ -188,7 +98,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.teachersView,
-            path: '/teachersView',
+            path: 'teachersView',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.teachersView),
               child: FacultyView(),
@@ -196,15 +106,15 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.announcements,
-            path: '/announcements',
+            path: 'announcements',
             pageBuilder: (context, state) => const MaterialPage<void>(
-              key: ValueKey<String>(RouteConstants.feeDetails),
+              key: ValueKey<String>(RouteConstants.announcements),
               child: AnnouncementView(),
             ),
           ),
           GoRoute(
             name: RouteConstants.contactDetails,
-            path: '/contactDetails',
+            path: 'contactDetails',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.contactDetails),
               child: ContactUsView(),
@@ -212,7 +122,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.internalMarks,
-            path: '/internalMarks',
+            path: 'internalMarks',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.internalMarks),
               child: InternalMarksView(),
@@ -220,7 +130,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.leaveRequest,
-            path: '/leaveRequest',
+            path: 'leaveRequest',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.leaveRequest),
               child:RequestView(),
@@ -228,7 +138,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.attendance,
-            path: '/attendance',
+            path: 'attendance',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.attendance),
               child:AttendanceView(),
@@ -236,7 +146,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.profileView,
-            path: '/profileView',
+            path: 'profileView',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.profileView),
               child: ProfileView(),
@@ -244,15 +154,15 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.sendRequest,
-            path: '/sendRequest',
+            path: 'sendRequest',
             pageBuilder: (context, state) => const MaterialPage<void>(
-              key: ValueKey<String>(RouteConstants.profileView),
+              key: ValueKey<String>(RouteConstants.sendRequest),
               child: LeaveApplicationView(),
             ),
           ),
           GoRoute(
             name: RouteConstants.viewFee,
-            path: '/viewFee',
+            path: 'viewFee',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key: ValueKey<String>(RouteConstants.viewFee),
               child: StudentFeeView(),
@@ -260,7 +170,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.studentAttendance,
-            path: '/studentsAttendance',
+            path: 'studentsAttendance',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key:  ValueKey<String>(RouteConstants.studentAttendance),
               child: StudentAttendanceView(),
@@ -268,7 +178,7 @@ class AppRouter {
           ),
           GoRoute(
             name: RouteConstants.studentInternalMark,
-            path: '/studentsInternalMark',
+            path: 'studentsInternalMark',
             pageBuilder: (context, state) => const MaterialPage<void>(
               key:  ValueKey<String>(RouteConstants.studentInternalMark),
               child: StudentsInternalMarkView(),

@@ -3,79 +3,65 @@ import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/core/models/leave_request.dart';
 import 'package:college_management/view_models/base_view_model.dart';
 import '../core/services/firebase_service/firebase_service.dart';
-
 class RequestViewModel extends BaseViewModel {
   final FirebaseService _firebaseService;
 
   RequestViewModel({required FirebaseService firebaseService})
       : _firebaseService = firebaseService;
 
-  List<LeaveRequest> _verifiedRequest = [];
+  final List<LeaveRequest> _allRequests = [];
+  final List<LeaveRequest> _verifiedRequests = [];
+  final List<LeaveRequest> _unverifiedRequests = [];
 
-  List<LeaveRequest> get verifiedRequest => _verifiedRequest;
-  List<LeaveRequest> _allrequest = [];
+  bool _showVerified = false;
 
-  List<LeaveRequest> _unVerifiedRequest = [];
+  List<LeaveRequest> get verifiedRequests => _verifiedRequests;
+  List<LeaveRequest> get unverifiedRequests => _unverifiedRequests;
+  bool get showVerified => _showVerified;
 
-  List<LeaveRequest> get unVerifiedRequest => _unVerifiedRequest;
-  bool _fetchVerifiedList = false;
-
-  bool get fetchVerifiedList => _fetchVerifiedList;
-
-  void setVerifyFilter({required bool fetchVerified}) {
-    print("setVerifyFilter called with: $fetchVerified"); // Debugging log
-    _fetchVerifiedList = fetchVerified;
-    notifyListeners(); // Ensure UI updates
+  void setVerifyFilter({required bool showVerified}) {
+    _showVerified = showVerified;
+    notifyListeners();
   }
-  Future<void> onModelReady(
-      {required String facultyCourse, required String sem}) async {
+
+  Future<void> onModelReady({required String facultyCourse, required String sem}) async {
     try {
       setViewState(state: ViewState.busy);
 
-      // Clear previous data
-      _allrequest.clear();
-      _verifiedRequest.clear();
-      _unVerifiedRequest.clear();
+      // Clear existing data
+      _allRequests.clear();
+      _verifiedRequests.clear();
+      _unverifiedRequests.clear();
 
-      var data = await _firebaseService.getData(
+      // Fetch data
+      final data = await _firebaseService.getData(
         collectionName: facultyCourse.toLowerCase() == "mca"
             ? FirebaseCollectionConstants.mcaLeaveApplications
             : FirebaseCollectionConstants.mbaLeaveApplications,
-        documentId: "123456789", // Fetch a specific document
       );
 
       if (data.isNotEmpty) {
-        var document = data.first; // Get the first document
+        final document = data.first;
 
         if (document.containsKey("leaveRequests")) {
-          var requests = document["leaveRequests"] as List<dynamic>;
+          final requests = List<Map<String, dynamic>>.from(document["leaveRequests"]);
 
-          for (var requestMap in requests) {
-            LeaveRequest request = LeaveRequest.fromMap(requestMap);
-            _allrequest.add(request);
+          for (var map in requests) {
+            final request = LeaveRequest.fromMap(map);
+            if (request.sem != sem) continue;
 
-            if (request.sem == sem) {
-              if (request.verified) {
-                _verifiedRequest.add(request);
-              } else if (DateTime.parse(request.fromDate).isAfter(DateTime.now())) {
-                _unVerifiedRequest.add(request);
-              }
+            _allRequests.add(request);
+            if (request.verified) {
+              _verifiedRequests.add(request);
+            } else if (DateTime.parse(request.fromDate).isAfter(DateTime.now())) {
+              _unverifiedRequests.add(request);
             }
           }
         }
       }
 
-      if (_fetchVerifiedList) {
-        if (_verifiedRequest.isEmpty) {
-          setViewState(state: ViewState.empty);
-        }
-      } else {
-        if (_unVerifiedRequest.isNotEmpty) {
-          setViewState(state: ViewState.ideal);
-        } else {
-          setViewState(state: ViewState.empty);
-        }
-      }
+      _updateViewStateBasedOnFilter();
+
     } catch (e) {
       showException(
         error: e,
@@ -84,56 +70,44 @@ class RequestViewModel extends BaseViewModel {
     }
   }
 
-
-  clearAllRequests({required String facultyCourse}) async {
-    try {
-      List<String> deletableRequest = [];
-      if (_allrequest.isNotEmpty) {
-        for (var i in _allrequest) {
-          deletableRequest.add(i.uid);
-        }
+  void _updateViewStateBasedOnFilter() {
+    if (_showVerified) {
+      if (_verifiedRequests.isEmpty) {
+        setViewState(state: ViewState.empty);
+      } else {
+        setViewState(state: ViewState.ideal);
       }
-      await _firebaseService.deleteMultipleDocuments(
-          collectionName: facultyCourse.toLowerCase() == "mca"
-              ? FirebaseCollectionConstants.mcaLeaveApplications
-              : FirebaseCollectionConstants.mbaLeaveApplications,
-          documentIds: deletableRequest);
-    } catch (e) {
-      showException(
-          error: e,
-          retryMethod: () {
-            clearAllRequests(facultyCourse: facultyCourse);
-          });
+    } else {
+      if (_unverifiedRequests.isEmpty) {
+        setViewState(state: ViewState.empty);
+      } else {
+        setViewState(state: ViewState.ideal);
+      }
     }
   }
+
   Future<void> verifyRequest({required LeaveRequest request}) async {
     try {
       setViewState(state: ViewState.busy);
 
-      // Fetch existing data
-      var dataList = await _firebaseService.getData(
+      final dataList = await _firebaseService.getData(
         collectionName: request.course.toLowerCase() == "mca"
             ? FirebaseCollectionConstants.mcaLeaveApplications
             : FirebaseCollectionConstants.mbaLeaveApplications,
-        documentId: "123456789", // Fetch the correct document
+        documentId: request.studentId,
       );
 
-      Map<String, dynamic>? document;
-
-      if (dataList.isNotEmpty) {
-        document = dataList.first; // Get the first document
-      }
-
-      if (document == null || !document.containsKey("leaveRequests")) {
-        print("⚠️ No leave requests found!");
+      if (dataList.isEmpty || !dataList.first.containsKey("leaveRequests")) {
+        setViewState(state: ViewState.empty);
         return;
       }
 
-      List<dynamic> leaveRequests = List.from(document["leaveRequests"]);
+      final document = dataList.first;
+      final List<Map<String, dynamic>> leaveRequests =
+      List<Map<String, dynamic>>.from(document["leaveRequests"]);
 
-      // Update the specific request in the list
       for (int i = 0; i < leaveRequests.length; i++) {
-        LeaveRequest tempRequest = LeaveRequest.fromMap(leaveRequests[i]);
+        final tempRequest = LeaveRequest.fromMap(leaveRequests[i]);
         if (tempRequest.uid == request.uid) {
           leaveRequests[i] = request.copyWith(verified: true).toMap();
           break;
@@ -145,17 +119,16 @@ class RequestViewModel extends BaseViewModel {
         collectionName: request.course.toLowerCase() == "mca"
             ? FirebaseCollectionConstants.mcaLeaveApplications
             : FirebaseCollectionConstants.mbaLeaveApplications,
-        documentId: "123456789",
-        updatedData: {
-          "leaveRequests": leaveRequests
-        },
+        documentId: request.studentId,
+        updatedData: {"leaveRequests": leaveRequests},
       );
 
-      // Move request to verified list
-      _unVerifiedRequest.removeWhere((req) => req.uid == request.uid);
-      _verifiedRequest.add(request.copyWith(verified: true));
+      // Update local lists
+      _unverifiedRequests.removeWhere((r) => r.uid == request.uid);
+      _verifiedRequests.add(request.copyWith(verified: true));
 
-      setViewState(state: ViewState.ideal);
+      _updateViewStateBasedOnFilter();
+
     } catch (e) {
       showException(
         error: e,
@@ -164,22 +137,29 @@ class RequestViewModel extends BaseViewModel {
     }
   }
 
-  Future addRequest() async {
-    await _firebaseService.setData(
-        collectionName: FirebaseCollectionConstants.mcaLeaveApplications,
-        documentId: "123456789",
-        data: LeaveRequest(
-                studentLastName: "B",
-                studentFirstName: "Aparna",
-                uid: "123456789",
-                studentId: "018",
-                course: "MCA",
-                sem: "2",
-                fromDate: DateTime.now().add(Duration(days: 15)).toString(),
-                toDate: DateTime.now().add(Duration(days: 16)).toString(),
-                appliedDate: DateTime.now().toString(),
-                reason: "FEVER",
-                verified: false)
-            .toMap());
+  Future<void> clearAllRequests({required String facultyCourse}) async {
+    try {
+      final idsToDelete = _allRequests.map((r) => r.uid).toList();
+
+      if (idsToDelete.isNotEmpty) {
+        await _firebaseService.deleteMultipleDocuments(
+          collectionName: facultyCourse.toLowerCase() == "mca"
+              ? FirebaseCollectionConstants.mcaLeaveApplications
+              : FirebaseCollectionConstants.mbaLeaveApplications,
+          documentIds: idsToDelete,
+        );
+      }
+
+      _allRequests.clear();
+      _verifiedRequests.clear();
+      _unverifiedRequests.clear();
+      setViewState(state: ViewState.empty);
+
+    } catch (e) {
+      showException(
+        error: e,
+        retryMethod: () => clearAllRequests(facultyCourse: facultyCourse),
+      );
+    }
   }
 }

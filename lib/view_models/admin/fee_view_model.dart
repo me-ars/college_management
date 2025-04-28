@@ -13,6 +13,7 @@ class FeeViewModel extends BaseViewModel {
     try {
       setViewState(state: ViewState.busy);
       _feeService.addFeeData(studentUid, fee);
+      showSnackBar(snackBarMessage: "Fee added successfully");
       setViewState(state: ViewState.ideal);
     } catch (e) {
       showException(

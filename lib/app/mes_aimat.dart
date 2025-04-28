@@ -1,8 +1,6 @@
-import 'package:college_management/core/services/firebase_service/firebase_service.dart';
-import 'package:college_management/init_dependencies.dart';
+import 'package:college_management/core/models/admin_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../core/models/faculty.dart';
 import '../core/models/student.dart';
 import '../core/navigation/app_router.dart';
@@ -13,9 +11,13 @@ class MesAimat extends StatefulWidget {
  final Student? student;
  final Faculty? faculty;
  final bool isAdmin;
+  final AdminModel? adminModel;
 
-  const MesAimat(
-      {super.key, this.student, this.faculty, required this.isAdmin});
+  const MesAimat({super.key,
+    this.student,
+    this.faculty,
+    required this.isAdmin,
+    this.adminModel});
 
   @override
   State<MesAimat> createState() => _MesAimatState();
@@ -28,9 +30,9 @@ class _MesAimatState extends State<MesAimat> {
   void initState() {
     _appState = AppState(
         isAdmin: widget.isAdmin,
-        firebaseService: locator<FirebaseService>(),
         faculty: widget.faculty,
-        student: widget.student);
+        student: widget.student,
+        admin: widget.adminModel);
     super.initState();
   }
 
@@ -40,9 +42,8 @@ class _MesAimatState extends State<MesAimat> {
       create: (BuildContext context) => _appState,
       child: Builder(
         builder: (context) {
-          final appRouter = AppRouter(appState: _appState).appRouter;
-
-          // AppRouter(appState: Provider.of<AppState>(context)).appRouter;
+          final appRouter =
+              AppRouter(appState: Provider.of<AppState>(context)).appRouter;
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'MesAimat',

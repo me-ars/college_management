@@ -32,11 +32,6 @@ class _StudentsViewState extends State<StudentsView> {
         builder: (context, model, child) {
           return SafeArea(
               child: Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                model.add();
-              },
-            ),
             appBar: AppBar(
               title: const Text(
                 "Students",

@@ -1,6 +1,8 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/views/shared/loading_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../app/base_view.dart';
 import '../../core/enums/view_state.dart';
@@ -19,8 +21,9 @@ class _StudentsInternalMarkViewState extends State<StudentsInternalMarkView> {
   Widget build(BuildContext context) {
     return BaseView<StudentsInternalMarkViewModel>(
       onModelReady: (model) {
-        // Replace with actual student ID and course
-        model.onModelReady(studentId: "1234", course: "mca");
+        model.onModelReady(
+            studentId: context.read<AppState>().student!.studentId,
+            course: context.read<AppState>().student!.course);
       },
       refresh: (StudentsInternalMarkViewModel model) {},
       builder: (context, model, child) {
@@ -40,7 +43,11 @@ class _StudentsInternalMarkViewState extends State<StudentsInternalMarkView> {
 
                   case ViewState.empty:
                     return const Center(
-                        child: Text('No internal marks available.'));
+                        child: Text(
+                      'No internal marks available.',
+                      style: TextStyle(
+                          color: AppPalette.primaryTextColor, fontSize: 24),
+                    ));
 
                   case ViewState.ideal:
                     return ListView.builder(

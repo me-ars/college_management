@@ -25,34 +25,35 @@ class StudentAttendanceView extends StatelessWidget {
             backgroundColor: AppPalette.violetLt,
           ),
           body: model.viewState == ViewState.ideal
-              ? Expanded(
-                  child: ListView.builder(
-                  itemCount: model.attendance.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      width: size.width*0.8,
-                      height: size.height*0.1,
-                      decoration:
-                          const BoxDecoration(color: AppPalette.offWhite),
-                      child: ListTile(
-                        title: Text(
-                          model.attendance[index],
-                          style: const TextStyle(
-                              color: AppPalette.primaryTextColor),
-                        ),
+            ? ListView.builder(
+              itemCount: model.attendance.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding:  EdgeInsets.all(size.width*0.04),
+                  child: Container(
+                    width: size.width * 0.8,
+                    height: size.height * 0.1,
+                    decoration: const BoxDecoration(color: AppPalette.offWhite),
+                    child: ListTile(
+                      title: Text(
+                        model.attendance[index],
+                        style: const TextStyle(color: AppPalette.primaryTextColor),
                       ),
-                    );
-                  },
-                ))
+                    ),
+                  ),
+                );
+              },
+            )
               : model.viewState == ViewState.empty
-                  ? const Center(
-                      child: Text(
-                        'No attendance records',
-                        style: TextStyle(color: AppPalette.primaryTextColor),
-                      ),
-                    )
-                  : LoadingView(
-                      height: size.height * 0.3, width: size.width / 2.5),
+        ? const Center(
+          child: Text(
+          'No attendance records',
+          style: TextStyle(color: AppPalette.primaryTextColor),
+        ),
+        )
+            : LoadingView(
+        height: size.height * 0.3, width: size.width / 2.5),
+
         ));
       },
     );

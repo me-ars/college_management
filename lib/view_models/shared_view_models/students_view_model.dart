@@ -41,10 +41,8 @@ class StudentsViewModel extends BaseViewModel {
           }
         }
 
-        print("Total students fetched: ${_students.length}");
 
         for (var student in _students) {
-          print("Checking student: ${student.sem}, ${student.course}");
           if (student.sem?.trim().toLowerCase() == sem.trim().toLowerCase() &&
               student.course.trim().toLowerCase() ==
                   course.trim().toLowerCase()) {
@@ -52,13 +50,10 @@ class StudentsViewModel extends BaseViewModel {
           }
         }
 
-        print("Filtered students count: ${_filteredStudents.length}");
       } else {
-        print("⚠️ No user data found.");
       }
 
       if (_filteredStudents.isEmpty) {
-        print("No students match the criteria.");
         setViewState(state: ViewState.empty);
       } else {
         setViewState(state: ViewState.ideal);
@@ -85,7 +80,7 @@ class StudentsViewModel extends BaseViewModel {
       _filteredStudents.removeWhere((element) => element.studentId == uid);
 
       _students.removeWhere((element) => element.studentId == uid);
-
+showSnackBar(snackBarMessage: "Deleted student Successfully");
       setViewState(state: ViewState.ideal);
     } catch (e) {
       showException(
@@ -129,31 +124,4 @@ class StudentsViewModel extends BaseViewModel {
     }
   }
 
-  add() async {
-    try {
-      Student student = Student(
-          sem: "1",
-          firstName: "ANandu",
-          lastName: "B",
-          studentId: "4123",
-          course: "MCA",
-          joiningDate: "joiningDate",
-          batch: "subject",
-          gender: "gender",
-          dob: "dob",
-          phone: "phone",
-          email: "email",
-          guardianName: "coName",
-          guardianPhone: "coPhoneNumber",
-          bachelors: "",
-          plusTwo: "",
-          sslc: "",
-          address: "address");
-      await _firebaseService.setData(
-          collectionName: "users", documentId: "4123", data: student.toMap());
-      print("added");
-    } catch (e) {
-      print(e);
-    }
-  }
 }

@@ -41,6 +41,7 @@ class CalenderViewModel extends BaseViewModel {
           documentId: eventModel.date,
           collectionName: FirebaseCollectionConstants.calenderEvents,
           data: eventModel.toMap());
+      showSnackBar(snackBarMessage: "Event Added");
       setViewState(state: ViewState.ideal);
     } catch (e) {
       showException(

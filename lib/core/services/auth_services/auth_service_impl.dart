@@ -49,26 +49,33 @@ class AuthServiceImpl extends AuthService {
   }
 
   @override
-  Future loginUser({required String userId, required String password}) async {
+  Future<Map<String, dynamic>?> loginUser({
+    required String userId,
+    required String password,
+  }) async {
     try {
-      var users = await _firebaseService.getData(collectionName: "users");
+      // Fetch user by document ID (assuming each user has a document named after userId)
+      final userData = await _firebaseService.getData(
+        collectionName: "users",
+        documentId: userId,
+      );
 
-      Map<String, dynamic>? filteredUser = users
-          .cast<Map<String, dynamic>>()
-          .firstWhere(
-            (user) =>
-                (user["employeeId"] == userId || user["studentId"] == userId),
-            orElse: () => {},
-          );
+      if (userData == null || userData.isEmpty) {
+        return null;
+      }
 
+      // Try to sign in with the retrieved email and provided password
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: filteredUser?["email"], password: password);
+        email: userData[0]["email"],
+        password: password,
+      );
 
-      return filteredUser;
+      return userData[0];
     } catch (e) {
       rethrow;
     }
   }
+
 
   /// Returns the current logged-in user's email
   @override

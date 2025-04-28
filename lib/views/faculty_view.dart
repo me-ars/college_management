@@ -2,6 +2,7 @@ import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/view_models/admin/faculty_view_model.dart';
 import 'package:college_management/views/shared/loading_view.dart';
 import 'package:college_management/views/shared/user_view_tile.dart';
+import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 import '../app/base_view.dart';
@@ -26,36 +27,11 @@ class _FacultyViewState extends State<FacultyView> {
         builder: (context, model, child) {
           return SafeArea(
               child: Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                model.add();
-              },
-            ),
             appBar: AppBar(
               title: const Text(
                 "Faculty",
                 style: TextStyle(color: AppPalette.offWhite),
               ),
-              actions: [
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.search,
-                      color: AppPalette.offWhite,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.sort,
-                      color: AppPalette.offWhite,
-                    )),
-                IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.filter_alt,
-                      color: AppPalette.offWhite,
-                    ))
-              ],
               backgroundColor: AppPalette.violetDark,
             ),
             body: model.viewState == ViewState.ideal
@@ -64,15 +40,80 @@ class _FacultyViewState extends State<FacultyView> {
                     itemBuilder: (context, index) {
                       return UserViewTile(
                           onEdit: () {
-                            model.assignAsHod(faculty: model.faculty[index]);
-                            Navigator.pop(context);
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    "Update sem",
+                                    style: TextStyle(
+                                        color: AppPalette
+                                            .primaryTextColor),
+                                  ),
+                                  content:
+                                  SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment
+                                          .start,
+                                      mainAxisSize:
+                                      MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          'Employee ID: ${model.faculty[index].employeeId}',
+                                          style: const TextStyle(
+                                              color: AppPalette
+                                                  .primaryTextColor),
+                                        ),
+                                        Text(
+                                          'Name: ${model.faculty[index].firstName + model.faculty[index].lastName}',
+                                          style: const TextStyle(
+                                              color: AppPalette
+                                                  .primaryTextColor),
+                                        ),
+                                        Text(
+                                          'Subject: ${model.faculty[index].subject}',
+                                          style: const TextStyle(
+                                              color: AppPalette
+                                                  .primaryTextColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    CustomButton(
+                                      width: size.width * 0.8,
+                                      height:
+                                      size.height * 0.08,
+                                      onPressed: () {
+                                        model.assignAsHod(faculty: model.faculty[index]);
+                                        Navigator.pop(
+                                            context);
+                                      },
+                                      label: "Assign as HOD",
+                                    ),
+                                    CustomButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      label: "Cancel",
+                                      width: size.width * 0.8,
+                                      height:
+                                      size.height * 0.08,
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           canEdit: true,
                           onTap: () {
                             model.deleteUser(
                                 uid: model.faculty[index].employeeId,
                                 index: index);
-                            Navigator.of(context).pop();
+                            Navigator.pop(context);
                           },
                           width: size.width * 0.65,
                           height: size.height * 0.15,

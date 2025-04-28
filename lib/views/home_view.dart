@@ -23,7 +23,6 @@ class _HomeViewState extends State<HomeView> {
     Size size = MediaQuery.of(context).size;
     return BaseView<HomeViewModel>(
       onModelReady: (HomeViewModel model) {
-        print(context.read<AppState>().faculty!.isHOD);
         model.onModelReady();
       },
       refresh: (HomeViewModel model) {},
@@ -40,19 +39,28 @@ class _HomeViewState extends State<HomeView> {
                           homeScreeHead(
                             height: size.height / 5.2,
                             width: size.width,
-                            avatarText: "A",
+                              avatarText:
+                                  context.read<AppState>().faculty != null
+                                      ? context
+                                          .read<AppState>()
+                                          .faculty!
+                                          .firstName[0]
+                                          .toUpperCase()
+                                      : context.read<AppState>().student != null
+                                          ? context
+                                              .read<AppState>()
+                                              .student!
+                                              .firstName[0]
+                                              .toUpperCase()
+                                          : 'A',
                               context: context),
                           SizedBox(height: size.height * 0.02),
-
-                          Center(child:
-                                  // context.read<AppState>().faculty != null
-                                  //         ?
-                                  // facultyHomeBody(context: context)),
-                          //         : context.read<AppState>().student != null
-                          //             ?
-                          // studentHomeBody(context: context)),
-                          // :
-                          adminHomeBody(context: context)),
+                          Center(
+                              child: context.read<AppState>().faculty != null
+                                  ? facultyHomeBody(context: context)
+                                  : context.read<AppState>().student != null
+                                      ? studentHomeBody(context: context)
+                                      : adminHomeBody(context: context)),
                           Center(
                             child: GalleryTile(
                               height: size.height / 5.2,
@@ -105,23 +113,23 @@ Widget homeScreeHead(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Aparna',
-                    // context.read<AppState>().faculty != null
-                    //     ? context.read<AppState>().faculty!.firstName
-                    //     : context.read<AppState>().student != null
-                    //         ? context.read<AppState>().student!.firstName
-                    //         : "Admin",
+                  Text(
+                    context.read<AppState>().faculty != null
+                        ? context.read<AppState>().faculty!.firstName
+                        : context.read<AppState>().student != null
+                            ? context.read<AppState>().student!.firstName
+                            : "Admin",
                     style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: AppPalette.primaryTextColor),
                   ),
-                  Text('MCA',
-                    // context.read<AppState>().faculty != null
-                    //     ? '${context.read<AppState>().faculty!.course} Faculty'
-                    //     : context.read<AppState>().student != null
-                    //     ? context.read<AppState>().student!.course
-                    //     : "Admin",
+                  Text(
+                    context.read<AppState>().faculty != null
+                        ? '${context.read<AppState>().faculty!.course} Faculty'
+                        : context.read<AppState>().student != null
+                            ? context.read<AppState>().student!.course
+                            : "Admin",
                     style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w500,
@@ -302,6 +310,15 @@ Widget facultyHomeBody({required BuildContext context}) {
                 iconImage: "assets/icons/request_.png",
                 optionName: "Request",
               ),
+              // CustomIconTile(
+              //   height: tileHeight,
+              //   width: tileWidth,
+              //   onTap: () {
+              //     context.goNamed(RouteConstants.feeDetails);
+              //   },
+              //   iconImage: "assets/icons/money.png",
+              //   optionName: "Fee",
+              // ),
             ],
           ),
         ],
@@ -371,7 +388,7 @@ Widget studentHomeBody({required BuildContext context}) {
             onTap: () {
               context.goNamed(RouteConstants.viewFee);
             },
-            iconImage: "assets/icons/request_.png",
+            iconImage: "assets/icons/money.png",
             optionName: "View Fee",
           ),
           // Last row with left alignment

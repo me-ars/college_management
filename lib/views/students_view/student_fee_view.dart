@@ -1,9 +1,12 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:college_management/app/base_view.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/view_models/student_fee_view_model.dart';
 import 'package:college_management/views/shared/loading_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 class StudentFeeView extends StatelessWidget {
   const StudentFeeView({super.key});
 
@@ -13,7 +16,8 @@ class StudentFeeView extends StatelessWidget {
 
     return BaseView<StudentFeeViewModel>(
       onModelReady: (StudentFeeViewModel model) {
-        model.onModelReady(studentId: '2607');
+        model.onModelReady(
+            studentId: context.read<AppState>().student!.studentId);
       },
       refresh: (StudentFeeViewModel model) {},
       builder: (context, model, child) {
@@ -32,7 +36,10 @@ class StudentFeeView extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Container(color: AppPalette.violetLt,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: AppPalette.violetLt,
+                                borderRadius: BorderRadius.circular(10)),
                             child: ListTile(
                               title: Text('Sem ${model.fee[index].sem}'),
                               subtitle: Text(' Fee ${model.fee[index].feeFor}'),

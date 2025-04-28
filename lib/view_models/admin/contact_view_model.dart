@@ -33,7 +33,6 @@ class ContactUsViewModel extends BaseViewModel {
   _fetchData() async {
     var response = await _firebaseService.getData(
         collectionName: FirebaseCollectionConstants.contactDetails);
-    print(response);
 
       _contactUsModel = ContactUsModel.fromMap(response[0]);
 

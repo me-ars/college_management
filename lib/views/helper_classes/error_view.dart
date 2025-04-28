@@ -1,9 +1,7 @@
 import 'package:college_management/core/constants/app_pallete.dart';
-import 'package:college_management/core/constants/route_constants.dart';
 import 'package:college_management/views/widgets/custom_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 class ErrorView {
   static showErrorView(
@@ -39,7 +37,10 @@ class ErrorView {
             CustomButton(
                 label: "Return home",
                 onPressed: () {
-                  context.replaceNamed(RouteConstants.home);
+                 Navigator.pop(context);
+                 if(Navigator.canPop(context)){
+                   Navigator.pop(context);
+                 }
                 },
                 width: size.width * 0.7,
                 height: size.height * 0.08),

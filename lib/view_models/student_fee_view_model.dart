@@ -18,7 +18,7 @@ class StudentFeeViewModel extends BaseViewModel {
       setViewState(state: ViewState.busy);
       var data = await _firebaseService.getData(
           collectionName: FirebaseCollectionConstants.fee,
-          documentId: '2607');
+          documentId: studentId);
       if (data.isNotEmpty) {
         var document = data.first;
         if (document.containsKey("feeDetails")) {

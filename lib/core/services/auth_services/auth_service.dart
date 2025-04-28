@@ -5,7 +5,8 @@ abstract class AuthService {
   Future<void> registerUser(
       {Student? student, Faculty? faculty, required String password});
 
-  Future loginUser({required String userId, required String password});
+  Future<Map<String, dynamic>?> loginUser(
+      {required String userId, required String password});
 
   Future<void> logoutUser();
 

@@ -43,7 +43,7 @@ Future<void> _fetchUsers()async{
           }
         }
       } else {
-        print("⚠️ No user data found.");
+        showSnackBar(snackBarMessage: "⚠️ No user data found.");
       }
     }
   }
@@ -53,35 +53,13 @@ Future<void> _fetchUsers()async{
       await _firebaseService.deleteData(
           collectionName: FirebaseCollectionConstants.users, documentId: uid);
       _faculty.removeAt(index);
+      showSnackBar(snackBarMessage: 'Faculty deleted successfully');
       setViewState(state: ViewState.ideal);
     } catch (e) {
       showException(error: e, retryMethod: deleteUser(uid: uid, index: index));
     }
   }
 
-  add() async {
-    try {
-      Faculty fac = Faculty(
-          firstName: "firstName",
-          lastName: "lastName",
-          employeeId: "2607",
-          course: "Mca",
-          joiningDate: "joiningDate",
-          subject: "subject",
-          gender: "gender",
-          dob: "dob",
-          phone: "phone",
-          email: "email",
-          coName: "coName",
-          coPhoneNumber: "coPhoneNumber",
-          address: "address");
-      await _firebaseService.setData(
-          collectionName: "users", documentId: "2607", data: fac.toMap());
-      print("added");
-    } catch (e) {
-      print(e);
-    }
-  }
 
   assignAsHod({required Faculty faculty}) async {
     try {
@@ -91,8 +69,7 @@ Future<void> _fetchUsers()async{
           collectionName: FirebaseCollectionConstants.users,
           documentId: faculty.employeeId,
           updatedData: hod.toMap());
-      //todo snackBar
-
+showSnackBar(snackBarMessage: "Assigned as HOD");
       setViewState(state: ViewState.ideal);
     } catch (e) {
       showException(

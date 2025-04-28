@@ -8,7 +8,6 @@ import 'package:college_management/views/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../app/base_view.dart';
 import '../../view_models/leave_application_view_model.dart';
 import '../shared/loading_view.dart';
@@ -25,29 +24,13 @@ class LeaveApplicationView extends StatefulWidget {
 class _LeaveApplicationViewState extends State<LeaveApplicationView> {
   @override
   Widget build(BuildContext context) {
-    Student student = Student(
-        sem: '2',
-        firstName: 'firstName',
-        lastName: 'lastName',
-        studentId: '123456789',
-        course: 'course',
-        joiningDate: 'joiningDate',
-        batch: 'batch',
-        gender: 'gender',
-        dob: 'dob',
-        phone: 'phone',
-        email: 'email',
-        guardianName: 'guardianName',
-        guardianPhone: 'guardianPhone',
-        address: 'address',
-        sslc: 'sslc',
-        plusTwo: 'plusTwo',
-        bachelors: 'bachelors');
+    Student? student;
 
     return BaseView<LeaveApplicationViewModel>(
       refresh: (LeaveApplicationViewModel model) {},
       onModelReady: (LeaveApplicationViewModel model) {
-        model.onModelReady(student: student); // Load previous requests
+        student = context.read<AppState>().student;
+        model.onModelReady(student: student!); // Load previous requests
       },
       builder: (context, model, child) {
         Size size = MediaQuery.of(context).size;
@@ -61,20 +44,24 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
               onPressed: () {
                 _showLeaveRequestDialog(context, model);
               },
-              child: Icon(Icons.add), // Plus icon
+              child: const Icon(Icons.add), // Plus icon
             ),
             body: model.viewState == ViewState.busy
                 ? LoadingView(
                     height: size.height / 4.5, width: size.width * 0.8)
                 : model.leaveRequest.isEmpty
-                    ? const Center(child: Text("No previous leave requests."))
+                    ? const Center(
+                        child: Text(
+                        "No previous leave requests.",
+                        style: TextStyle(color: AppPalette.primaryTextColor,fontSize: 24),
+                      ))
                     : ListView.builder(
                         itemCount: model.leaveRequest.length,
                         itemBuilder: (context, index) {
                           LeaveRequest request = model.leaveRequest[index];
 
                           // Ensure only current student's requests are displayed
-                          if (request.studentId != student.studentId) {
+                          if (request.studentId != student?.studentId) {
                             return const SizedBox
                                 .shrink(); // Skip non-matching requests
                           }
@@ -83,7 +70,8 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
                             margin: const EdgeInsets.all(8),
                             child: ListTile(
                               title: Text(
-                                  "${request.fromDate} to ${request.toDate}"),
+                                "${DateFormat('dd/MM/yy').format(DateTime.parse(request.fromDate))} to ${DateFormat('dd/MM/yy').format(DateTime.parse(request.toDate))}",
+                              ),
                               subtitle: Text("Reason: ${request.reason}"),
                               trailing: Icon(
                                 request.verified
@@ -216,14 +204,14 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
                               );
                               return;
                             }
-
-                            LeaveRequest newRequest = LeaveRequest(
-                              studentFirstName: "Aparna",
-                              studentLastName: "B",
-                              uid: "123456789",
-                              studentId: "123456789",
-                              course: "MCA",
-                              sem: "2",
+Student student=context.read<AppState>().student!
+                            ;LeaveRequest newRequest = LeaveRequest(
+                              studentFirstName: student.firstName,
+                              studentLastName: student.lastName,
+                              uid: student.studentId+fromDate!.toString(),
+                              studentId:student.studentId,
+                              course: student.course,
+                              sem: student.sem!,
                               fromDate: fromDate!.toString(),
                               toDate: toDate!.toString(),
                               appliedDate: DateTime.now().toString(),
@@ -251,9 +239,11 @@ class _LeaveApplicationViewState extends State<LeaveApplicationView> {
   Future<DateTime?> _selectDate(BuildContext context) async {
     return showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(Duration(days: 1)), // Default: Tomorrow
-      firstDate: DateTime.now().add(Duration(days: 1)), // No past dates
-      lastDate: DateTime.now().add(Duration(days: 365)), // 1 year max
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      // Default: Tomorrow
+      firstDate: DateTime.now().add(const Duration(days: 1)),
+      // No past dates
+      lastDate: DateTime.now().add(const Duration(days: 365)), // 1 year max
     );
   }
 }

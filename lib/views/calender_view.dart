@@ -1,5 +1,7 @@
+import 'package:college_management/app/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:college_management/core/constants/app_pallete.dart';
 import 'package:college_management/core/models/calender_event_model.dart';
@@ -32,7 +34,6 @@ class _CalenderViewState extends State<CalenderView> {
     return BaseView<CalenderViewModel>(
       onModelReady: (CalenderViewModel model) async {
         await model.onModelReady(); // Fetch events from Firebase
-        setState(() {}); // Refresh UI after loading events
       },
       onDispose: (CalenderViewModel model) {
         _eventController.clear();
@@ -47,66 +48,68 @@ class _CalenderViewState extends State<CalenderView> {
 
         return Scaffold(
           appBar: AppBar(title: const Text("Events"),backgroundColor: AppPalette.violetLt,),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: AppPalette.violetLt,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    contentPadding: const EdgeInsets.all(0),
-                    content: SizedBox(
-                      height: size.height / 2.5,
-                      width: size.width,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CustomDatePicker(
-                            labelText: "Select event date.",
-                            width: size.width * 0.7,
-                            height: size.height * 0.09,
-                            dateController: _dateController,
-                          ),
-                          SizedBox(height: size.height * 0.01),
-                          CustomTextField(
-                            labelText: "Enter event.",
-                            width: size.width * 0.7,
-                            height: size.height * 0.09,
-                            isPassword: false,
-                            textEditingController: _eventController,
-                          ),
-                          SizedBox(height: size.height * 0.01),
-                          CustomButton(
-                            label: "Add event",
-                            onPressed: () async {
-                              if (_dateController.text.isEmpty ||
-                                  !DateValidator.isValidDate(
-                                      _dateController.text)) {
-                                CustomSnackBar.show(
-                                    context, "Select a valid date.");
-                                return;
-                              }
-                              await model.addEvent(
-                                eventModel: CalenderEventModel(
-                                  date: _dateController.text,
-                                  event: _eventController.text,
-                                ),
-                              );
-                              CustomSnackBar.show(context, "Event added.");
-                              Navigator.pop(context);
-                              setState(() {}); // Refresh UI
-                            },
-                            width: size.width * 0.7,
-                            height: size.height * 0.08,
-                          )
-                        ],
+          floatingActionButton: Visibility(
+            visible: context.read<AppState>().isAdmin,
+            child: FloatingActionButton(
+              backgroundColor: AppPalette.violetLt,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      contentPadding: const EdgeInsets.all(0),
+                      content: SizedBox(
+                        height: size.height / 2.5,
+                        width: size.width,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomDatePicker(
+                              labelText: "Select event date.",
+                              width: size.width * 0.7,
+                              height: size.height * 0.09,
+                              dateController: _dateController,
+                            ),
+                            SizedBox(height: size.height * 0.01),
+                            CustomTextField(
+                              labelText: "Enter event.",
+                              width: size.width * 0.7,
+                              height: size.height * 0.09,
+                              isPassword: false,
+                              textEditingController: _eventController,
+                            ),
+                            SizedBox(height: size.height * 0.01),
+                            CustomButton(
+                              label: "Add event",
+                              onPressed: () async {
+                                if (_dateController.text.isEmpty ||
+                                    !DateValidator.isValidDate(
+                                        _dateController.text)) {
+                                  CustomSnackBar.show(
+                                      context, "Select a valid date.");
+                                  return;
+                                }
+                                await model.addEvent(
+                                  eventModel: CalenderEventModel(
+                                    date: _dateController.text,
+                                    event: _eventController.text,
+                                  ),
+                                );
+                                Navigator.pop(context);
+                                setState(() {}); // Refresh UI
+                              },
+                              width: size.width * 0.7,
+                              height: size.height * 0.08,
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-            child: Icon(Icons.add),
+                    );
+                  },
+                );
+              },
+              child: const Icon(Icons.add),
+            ),
           ),
           body: SafeArea(
             child: Column(
@@ -148,10 +151,10 @@ class _CalenderViewState extends State<CalenderView> {
                         .toList();
                   },
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: size.height * 0.05),
                 Text(
                   "Events in ${DateFormat('MMMM yyyy').format(_focusedDay)}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppPalette.primaryTextColor),
@@ -164,7 +167,11 @@ class _CalenderViewState extends State<CalenderView> {
                               DateTime.parse(event.date).month ==
                                   _focusedDay.month)
                           .isEmpty
-                      ? Center(child: Text("No events this month."))
+                      ? const Center(
+                          child: Text(
+                          "No events this month.",
+                          style: TextStyle(color: AppPalette.primaryTextColor),
+                        ))
                       : ListView.builder(
                           itemCount: model.events
                               .where((event) =>
@@ -182,15 +189,15 @@ class _CalenderViewState extends State<CalenderView> {
                                         _focusedDay.month)
                                 .toList();
                             return Card(
-                              margin: EdgeInsets.symmetric(
+                              margin: const EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 8),
                               child: ListTile(
-                                leading: Icon(Icons.event, color: Colors.blue),
+                                leading:const  Icon(Icons.event, color: Colors.blue),
                                 title: Text(
                                   DateFormat('yyyy-MM-dd').format(
                                       DateTime.parse(
                                           filteredEvents[index].date)),
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style:const  TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text(filteredEvents[index].event),
                               ),

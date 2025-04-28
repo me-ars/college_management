@@ -9,6 +9,7 @@ import '../app/base_view.dart';
 import '../core/constants/app_pallete.dart';
 import '../core/enums/view_state.dart';
 import '../view_models/internal_marks_view_model.dart';
+
 class InternalMarksView extends StatefulWidget {
   const InternalMarksView({super.key});
 
@@ -28,7 +29,7 @@ class _InternalMarksViewState extends State<InternalMarksView> {
     return BaseView<InternalMarksViewModel>(
       refresh:(InternalMarksViewModel model) {} ,
         onModelReady: (InternalMarksViewModel model) {
-          _semFilterController.text = '2';
+          _semFilterController.text = '1';
           _courseController.text = 'MCA';
           model.onModelReady(
               sem: _semFilterController.text, course: _courseController.text);
@@ -51,25 +52,43 @@ class _InternalMarksViewState extends State<InternalMarksView> {
                 children: [
                   Row(
                     children: [
-                      CustomDropdown(
-                        selectedValue: "MCA",
-                        items: const ["MCA", "MBA"],
-                        onChanged: (val) {
-                          _courseController.text = val;
-                        },
-                        width: size.width / 4,
-                        height: size.height * 0.08,
-                        labelText: "Course",
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Course',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          CustomDropdown(
+                            selectedValue: "MCA",
+                            items: const ["MCA", "MBA"],
+                            onChanged: (val) {
+                              _courseController.text = val;
+                            },
+                            width: size.width / 4,
+                            height: size.height * 0.08,
+                            labelText: "Course",
+                          ),
+                        ],
                       ),
-                      CustomDropdown(
-                        selectedValue: "2",
-                        items: const ["1", "2", "3", "4"],
-                        onChanged: (val) {
-                          _semFilterController.text = val;
-                        },
-                        width: size.width / 4,
-                        height: size.height * 0.08,
-                        labelText: "Sem",
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Sem',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          CustomDropdown(
+                            selectedValue: "1",
+                            items: const ["1", "2", "3", "4"],
+                            onChanged: (val) {
+                              _semFilterController.text = val;
+                            },
+                            width: size.width / 4,
+                            height: size.height * 0.08,
+                            labelText: "Sem",
+                          ),
+                        ],
                       ),
                       CustomButton(
                         label: "Apply",
@@ -186,26 +205,28 @@ class _InternalMarksViewState extends State<InternalMarksView> {
                                         style: TextStyle(
                                             color: AppPalette
                                                 .primaryTextColor)),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        CustomTextField(
-                                            width: size.width * 0.8,
-                                            height: size.height * 0.08,
-                                            labelText: "Subject",
-                                            isPassword: false,
-                                            textEditingController:
-                                            _subjectController),
-                                        SizedBox(
-                                            height: size.height * 0.03),
-                                        CustomTextField(
-                                            width: size.width * 0.8,
-                                            height: size.height * 0.08,
-                                            labelText: "Mark",
-                                            isPassword: false,
-                                            textEditingController:
-                                            _markController),
-                                      ],
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          CustomTextField(
+                                              width: size.width * 0.8,
+                                              height: size.height * 0.08,
+                                              labelText: "Subject",
+                                              isPassword: false,
+                                              textEditingController:
+                                              _subjectController),
+                                          SizedBox(
+                                              height: size.height * 0.03),
+                                          CustomTextField(
+                                              width: size.width * 0.8,
+                                              height: size.height * 0.08,
+                                              labelText: "Mark",
+                                              isPassword: false,
+                                              textEditingController:
+                                              _markController),
+                                        ],
+                                      ),
                                     ),
                                     actions: [
                                       CustomButton(
@@ -218,7 +239,7 @@ class _InternalMarksViewState extends State<InternalMarksView> {
                                       ),
                                       CustomButton(
                                         onPressed: () {
-                                          model.addInternalMark(
+                                          model.addInternalMark(sem: _semFilterController.text,course: _courseController.text,
                                             internalMark: InternalMark(
                                               uid: "${_semFilterController.text}_${student.course}_${student.studentId}_${_subjectController.text}",
                                               studentId:

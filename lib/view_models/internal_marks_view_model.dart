@@ -32,22 +32,18 @@ class InternalMarksViewModel extends BaseViewModel {
       _internalMarks.clear();
       _studentInternalMarks.clear();
 
-      // Fetch all users (faculty and students)
       var userData = await _firebaseService.getData(
         collectionName: FirebaseCollectionConstants.users,
       );
 
-      // Determine collection name based on course
       String collectionName = course == "MCA"
           ? FirebaseCollectionConstants.mcaInternalMark
           : FirebaseCollectionConstants.mbaInternalMark;
 
-      // Fetch internal marks collection once
       var internalMarksData = await _firebaseService.getData(
         collectionName: collectionName,
       );
 
-      // Populate faculty and student lists
       if (userData != null && userData.isNotEmpty) {
         _faculty.clear();
         _students.clear();
@@ -89,9 +85,7 @@ class InternalMarksViewModel extends BaseViewModel {
       }
 
       setViewState(state: _filteredStudents.isEmpty ? ViewState.empty : ViewState.ideal);
-    } catch (e, s) {
-      print("Error in onModelReady: $e");
-      print("Stacktrace: $s");
+    } catch (e) {
       showException(
         error: e,
         retryMethod: () {
@@ -100,44 +94,8 @@ class InternalMarksViewModel extends BaseViewModel {
       );
     }
   }
-// }
-//
-//   Future<void> fetchStudentInternalMarks(String studentId, String course) async {
-//     try {
-//       setViewState(state: ViewState.busy);
-//       _internalMarks.clear(); // ✅ Updated here
-//
-//       String collectionName = course == "MCA"
-//           ? FirebaseCollectionConstants.mcaInternalMark
-//           : FirebaseCollectionConstants.mbaInternalMark;
-//
-//       DocumentSnapshot docSnap = await FirebaseFirestore.instance
-//           .collection(collectionName)
-//           .doc(studentId)
-//           .get();
-//
-//       if (docSnap.exists) {
-//         Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-//         final marks = data['internalMarks'] as List<dynamic>? ?? [];
-//
-//         for (var mark in marks) {
-//           _internalMarks.add(InternalMark.fromMap(
-//               mark as Map<String, dynamic>)); // ✅ Updated here
-//         }
-//       }
-//
-//       setViewState(state: ViewState.ideal);
-//     } catch (e) {
-//       showException(
-//         error: e,
-//         retryMethod: () {
-//           fetchStudentInternalMarks(studentId, course);
-//         },
-//       );
-//     }
-//   }
 
-  Future<void> addInternalMark({required InternalMark internalMark}) async {
+  Future<void> addInternalMark({required InternalMark internalMark,required String sem,required String course}) async {
     try {
       String collectionName = internalMark.course == "MCA"
           ? FirebaseCollectionConstants.mcaInternalMark
@@ -185,13 +143,13 @@ class InternalMarksViewModel extends BaseViewModel {
           },
         );
       }
-
+onModelReady(sem: sem, course: course);
       showSnackBar(snackBarMessage: "Internal mark added successfully");
     } catch (e) {
       showException(
         error: e,
         retryMethod: () {
-          addInternalMark(internalMark: internalMark);
+          addInternalMark(internalMark: internalMark,course: course,sem: sem);
         },
       );
     }

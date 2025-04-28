@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:college_management/core/constants/firebase_collection_constants.dart';
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/core/models/announcement_model.dart';
@@ -16,29 +15,51 @@ class AnnouncementViewModel extends BaseViewModel {
 
   List<AnnouncementModel> get announcements => _announcements;
 
-  onModelReady() async {
+  onModelReady({required String course,required bool isAdminOrHod}) async {
     try {
       setViewState(state: ViewState.busy);
-      await _fetchAnnouncements();
-      setViewState(
-          state: _announcements.isEmpty ? ViewState.empty : ViewState.ideal);
+      await _fetchAnnouncements(course: course);
+      if(isAdminOrHod){
+        setViewState(state: ViewState.ideal);
+      }
+     else {
+        setViewState(
+            state: _announcements.isEmpty ? ViewState.empty : ViewState.ideal);
+      }
     } catch (e) {
-      showException(error: e, retryMethod: onModelReady);
+      showException(
+          error: e,
+          retryMethod: () {
+            onModelReady(course: course,isAdminOrHod: isAdminOrHod
+            );
+          });
     }
   }
-
-  Future<void> _fetchAnnouncements() async {
+  Future<void> _fetchAnnouncements({required String course}) async {
     try {
+      List<AnnouncementModel> allAnnouncements = [];
       var announcements = await _firebaseService.getData(
-          collectionName: FirebaseCollectionConstants.announcements);
+        collectionName: FirebaseCollectionConstants.announcements,
+      );
 
       if (announcements != null) {
-        _announcements = announcements
-            .map<AnnouncementModel>((data) => AnnouncementModel.fromMap(data))
-            .toList();
-      }
+        for (var announcement in announcements) {
+          allAnnouncements.add(AnnouncementModel.fromMap(announcement));
+        }
 
-      // TODO: Add filtering for users according to their course.
+        if (course.toLowerCase() == 'admin') {
+          // If the user is admin, fetch all announcements
+          _announcements.addAll(allAnnouncements);
+        } else {
+          // Otherwise, filter announcements for course or admin
+          for (var announcement in allAnnouncements) {
+            if (announcement.course.toLowerCase() == 'admin' ||
+                announcement.course.toLowerCase() == course.toLowerCase()) {
+              _announcements.add(announcement);
+            }
+          }
+        }
+      }
     } catch (e) {
       rethrow;
     }
@@ -59,7 +80,8 @@ class AnnouncementViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> sendAnnouncements({required String message}) async {
+  Future<void> sendAnnouncements(
+      {required String message, required String course}) async {
     try {
       String uid = DateTime.now().toString();
 
@@ -67,16 +89,18 @@ class AnnouncementViewModel extends BaseViewModel {
           collectionName: FirebaseCollectionConstants.announcements,
           documentId: uid,
           data: AnnouncementModel(
-                  course: "MCA",
+                  course: course,
                   uid: uid,
                   date: DateTime.now().toString(),
                   message: message)
               .toMap());
 
-      await _fetchAnnouncements();
+      await _fetchAnnouncements(course: course);
     } catch (e) {
       showException(
-          error: e, retryMethod: () => sendAnnouncements(message: message));
+          error: e,
+          retryMethod: () =>
+              sendAnnouncements(message: message, course: course));
     }
   }
 }

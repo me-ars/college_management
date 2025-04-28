@@ -48,7 +48,7 @@ class _ContactUsViewState extends State<ContactUsView> {
               resizeToAvoidBottomInset: true,
               body: model.viewState == ViewState.ideal
                   ? Center(
-                      child: context.read<AppState>().admin
+                      child: context.read<AppState>().isAdmin
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

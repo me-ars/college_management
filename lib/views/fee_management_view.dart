@@ -94,6 +94,10 @@ class _FeeViewState extends State<FeeView> {
                                       sem: sem,
                                       feeFor: feeFor,
                                       paidDate: _dateController.text));
+                              sem='';
+                              feeFor='';
+                              _dateController.clear();
+                              _studentIdController.clear();
                             },
                             width: size.width * 0.85,
                             height: size.height * 0.08,

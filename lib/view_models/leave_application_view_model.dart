@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:college_management/core/constants/firebase_collection_constants.dart';
 import 'package:college_management/core/enums/view_state.dart';
 import 'package:college_management/core/models/leave_request.dart';
@@ -19,20 +18,20 @@ class LeaveApplicationViewModel extends BaseViewModel {
   Future<void> onModelReady({required Student student}) async {
     try {
       setViewState(state: ViewState.busy);
-      //todo mca application
       var dataList = await _firebaseService.getData(
-        collectionName: FirebaseCollectionConstants.mcaLeaveApplications,
-        documentId: student.studentId
-      );
+          collectionName: student.course.toLowerCase() == 'mca'
+              ? FirebaseCollectionConstants.mcaLeaveApplications
+              : FirebaseCollectionConstants.mbaLeaveApplications,
+          documentId: student.studentId);
 
-      if (dataList.isNotEmpty) {  // ✅ Ensure document exists
-        var document = dataList.first;  // ✅ Get the first document (since it's a single document query)
+      if (dataList.isNotEmpty) {
+        var document = dataList.first;
 
-        if (document.containsKey("leaveRequests")) {  // ✅ Ensure field exists
-          var leaveRequests = document["leaveRequests"] as List<dynamic>;  // ✅ Extract the array
+        if (document.containsKey("leaveRequests")) {
+          var leaveRequests = document["leaveRequests"] as List<dynamic>;
 
           for (var request in leaveRequests) {
-            _leaveRequest.add(LeaveRequest.fromMap(request as Map<String, dynamic>));  // ✅ Convert each item in the array
+            _leaveRequest.add(LeaveRequest.fromMap(request as Map<String, dynamic>));
           }
         }
 
@@ -42,7 +41,7 @@ if(_leaveRequest.isNotEmpty){
 }else if(_leaveRequest.isEmpty){
   setViewState(state: ViewState.empty);
 }
-    } catch (e, s) {
+    } catch (e) {
       showException(
           error: e,
           retryMethod: () {
@@ -56,54 +55,54 @@ if(_leaveRequest.isNotEmpty){
       DateTime fromDate = DateTime.parse(request.fromDate);
       DateTime toDate = DateTime.parse(request.toDate);
 
-      // ✅ Validation: Start and End date must be in the future
       if (fromDate.isBefore(now) || toDate.isBefore(now)) {
         showSnackBar(snackBarMessage: "Leave start and end dates must be in the future.");
         return;
       }
 
       var dataList = await _firebaseService.getData(
-        collectionName: FirebaseCollectionConstants.mcaLeaveApplications,
-        documentId: '123456789',
+        collectionName: request.course.toLowerCase() == 'mca'
+            ? FirebaseCollectionConstants.mcaLeaveApplications
+            : FirebaseCollectionConstants.mbaLeaveApplications,
+        documentId: request.studentId,
       );
 
       Map<String, dynamic>? document;
-
       if (dataList.isNotEmpty) {
         document = dataList.first;
       }
 
       List<dynamic> leaveRequests = [];
-
       if (document != null && document.containsKey("leaveRequests")) {
         leaveRequests = List.from(document["leaveRequests"]);
       }
 
-      // Add the new request to the list
+      // Add new request
       leaveRequests.add(request.toMap());
 
       if (document != null) {
-        // Update Firestore if the document exists
         await _firebaseService.updateData(
-          collectionName: FirebaseCollectionConstants.mcaLeaveApplications,
-          documentId: "123456789",
+          collectionName: request.course.toLowerCase() == 'mca'
+              ? FirebaseCollectionConstants.mcaLeaveApplications
+              : FirebaseCollectionConstants.mbaLeaveApplications,
+          documentId: request.studentId,
           updatedData: {"leaveRequests": leaveRequests},
         );
       } else {
-        // Create a new document if it does not exist
         await _firebaseService.setData(
           collectionName: FirebaseCollectionConstants.mcaLeaveApplications,
-          documentId: "123456789",
+          documentId: request.studentId,
           data: {"leaveRequests": leaveRequests},
         );
       }
+
+      _leaveRequest.add(request);
+
+      setViewState(state: ViewState.ideal); // or notifyListeners();
     } catch (e) {
-      print("Error: $e");
       showException(error: e, retryMethod: () {
         addRequest(request: request);
       });
     }
   }
-
-
 }
